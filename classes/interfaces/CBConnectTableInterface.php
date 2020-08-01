@@ -24,5 +24,6 @@ interface CBConnectTableInterface
     public function insert(string $key, string $value);
     public function update(string $key, string $value);
     public function delete(string $key, string $value = '');
+    public function select(string $query, $output_type = '');
 
 }

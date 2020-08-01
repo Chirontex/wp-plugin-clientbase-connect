@@ -83,4 +83,12 @@ class CBConnectTable implements CBConnectTableInterface
 
     }
 
+    public function select(string $query, $output_type = '')
+    {
+
+        if (empty($output_type)) return $this->db->get_results($query);
+        else return $this->db->get_results($query, $output_type);
+
+    }
+
 }
