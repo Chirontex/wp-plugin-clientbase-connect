@@ -20,5 +20,9 @@ interface CBConnectTableInterface
 {
 
     public function __construct(string $database, string $prefix = '');
+    public function create_table();
+    public function insert(string $key, string $value);
+    public function update(string $key, string $value);
+    public function delete(string $key, string $value = '');
 
 }

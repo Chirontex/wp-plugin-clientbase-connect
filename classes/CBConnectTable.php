@@ -51,4 +51,36 @@ class CBConnectTable implements CBConnectTableInterface
 
     }
 
+    public function create_table()
+    {
+
+        return $this->db->query("CREATE TABLE IF NOT EXISTS `".$this->db_prefix."clientbaseconnect_options` (`ID` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT, `option_key` CHAR(50) NOT NULL, `option_value` CHAR(100) NULL, PRIMARY KEY (`ID`), UNIQUE INDEX `option_key` (`option_key`)) COLLATE='utf8mb4_unicode_ci' AUTO_INCREMENT=0");
+
+    }
+
+    public function insert(string $key, string $value)
+    {
+
+        return $this->db->insert($this->db_prefix.'clientbaseconnect_options', ['option_key' => $key, 'option_value' => $value]);
+
+    }
+
+    public function update(string $key, string $value)
+    {
+
+        return $this->db->update($this->db_prefix.'clientbaseconnect_options', ['option_value' => $value], ['option_key' => $key]);
+
+    }
+
+    public function delete(string $key, string $value = '')
+    {
+
+        $where['option_key'] = $key;
+
+        if (!empty($value)) $where['option_value'] = $value;
+
+        return $this->db->delete($this->db_prefix.'clientbaseconnect_options', $where);
+
+    }
+
 }
