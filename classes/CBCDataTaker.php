@@ -19,12 +19,44 @@
 class CBCDataTaker implements CBCDataTakerInterface
 {
 
-    public $cbconnecttable_obj;
+    public $cbct;
 
     public function __construct(object $cbct)
     {
-        
-        $this->cbconnecttable_obj = $cbct;
+
+        if (in_array('CBConnectTableInterface', class_implements($cbct))) $this->cbct = $cbct;
+        else $this->cbct = new CBConnectTable(DB_NAME);
+
+    }
+
+    public function set_settings(string $url, string $login, string $key)
+    {
+
+        if ($this->cbct->insert('url', $url) && $this->cbct->insert('login', $login) && $this->cbct->insert('key', $key)) return true;
+        else return ($this->cbct->update('url', $url) && $this->cbct->update('login', $login) && $this->cbct->update('key', $key));
+
+    }
+
+    public function get_settings()
+    {
+
+        $select = $this->cbct->select("SELECT t.option_key, t.option_value FROM ".$this->cbct->db_name.".".$this->cbct->db_prefix."clientbaseconnect_options AS t WHERE t.option_key = 'url' OR t.option_key = 'login' OR t.option_key = 'key'", ARRAY_A);
+
+        if ($select) {
+
+            $result = [];
+
+            foreach ($select as $values) {
+                
+                $result[$values['option_key']] = $values['option_value'];
+
+            }
+
+            if (count($result) < 3) $result = false;
+
+        } else $result = false;
+
+        return $result;
 
     }
 

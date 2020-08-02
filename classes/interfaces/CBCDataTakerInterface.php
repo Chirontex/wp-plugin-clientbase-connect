@@ -20,5 +20,7 @@ interface CBCDataTakerInterface
 {
 
     public function __construct(object $cbct);
+    public function set_settings(string $url, string $login, string $key);
+    public function get_settings();
 
 }
