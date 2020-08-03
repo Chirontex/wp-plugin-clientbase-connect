@@ -3,7 +3,7 @@
  * Plugin Name: ClentBase Connect
  * Plugin URI: https://github.com/drnoisier/wp-plugin-clientbase-connect
  * Description: WordPress-плагин, предназначенный для экспорта данных о пользователях в CRM-систему на платформе "Клиентская база" .
- * Version: 0.3
+ * Version: 0.31
  * Author: Дмитрий Шумилин
  * Author URI: mailto://dmitri.shumilinn@yandex.ru
  */
@@ -36,3 +36,19 @@ define('CBAPI_CREATE', 'create');
 define('CBAPI_READ', 'read');
 define('CBAPI_UPDATE', 'update');
 define('CBAPI_DELETE', 'delete');
+
+if (!defined('BOOTSTRAP_CSS_DIR')) define('BOOTSTRAP_CSS_DIR', plugin_dir_path(__FILE__).'css/bootstrap.min.css');
+
+if (!defined('BOOTSTRAP_JS_DIR')) define('BOOTSTRAP_JS_DIR', plugin_dir_path(__FILE__).'js/bootstrap.min.js');
+
+if (!defined('POPPER_DIR')) define('POPPER_DIR', plugin_dir_path(__FILE__).'js/popper.min.js');
+
+if (!defined('JQUERY_DIR')) define('JQUERY_DIR', plugin_dir_path(__FILE__).'js/jquery-3.5.1.js');
+
+if (!file_exists(BOOTSTRAP_CSS_DIR)) file_put_contents(BOOTSTRAP_CSS_DIR, file_get_contents('https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css'));
+
+if (!file_exists(BOOTSTRAP_JS_DIR)) file_put_contents(BOOTSTRAP_JS_DIR, file_get_contents('https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js'));
+
+if (!file_exists(POPPER_DIR)) @file_put_contents(POPPER_DIR, file_get_contents('https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js'));
+
+if (!file_exists(JQUERY_DIR)) file_put_contents(JQUERY_DIR, file_get_contents('https://code.jquery.com/jquery-3.5.1.js'));
