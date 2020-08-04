@@ -16,6 +16,46 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+function clientbaseconnect_results(int $code, string $message = '')
+{
+
+    $result = ['code' => $code];
+
+    if ($code < 1) {
+
+        switch ($code) {
+            case 0:
+                $result['message'] = 'Success.';
+                break;
+
+            case -1:
+                $result['message'] = 'Too few arguments for this request.';
+                break;
+
+            case -2:
+                $result['message'] = 'Database query failure.';
+                break;
+
+            case -3:
+                $result['message'] = 'Bad arguments.';
+                break;
+            
+            default:
+                $result['message'] = 'Unknown code.';
+                break;
+        }
+
+    } else {
+
+        if (empty($message)) $result['message'] = 'Unknown code.';
+        else $result['message'] = $message;
+
+    }
+
+    return $result;
+
+}
+
 function clientbaseconnect_permission_check()
 {
 
@@ -56,20 +96,20 @@ function clientbaseconnect_settings_set()
 
     if (isset($_POST['url']) && isset($_POST['login']) && isset($_POST['key'])) {
 
-        if ($cbc_data_taker->set_settings(trim($_POST['url']), trim($_POST['login']), trim($_POST['key']))) $result = ['code' => 0, 'message' => 'Success.'];
+        if ($cbc_data_taker->set_settings(trim($_POST['url']), trim($_POST['login']), trim($_POST['key']))) $result = clientbaseconnect_results(0);
         else {
 
-            $result = ['code' => -2, 'message' => 'Database query failure.'];
+            $result = clientbaseconnect_results(-2);
 
-            $cbc_logger->log('/clientbaseconnect/v1/settings/set — answer code -2: "Database query failure."', 2);
+            $cbc_logger->log('/clientbaseconnect/v1/settings/set — answer code '.$result['code'].': "'.$result['message'].'"', 2);
 
         }
 
     } else {
         
-        $result = ['code' => -1, 'message' => 'Too few arguments for this request.'];
+        $result = clientbaseconnect_results(-1);
 
-        $cbc_logger->log('/clientbaseconnect/v1/settings/set — answer code -1: "Too few arguments for this request."', 2);
+        $cbc_logger->log('/clientbaseconnect/v1/settings/set — answer code '.$result['code'].': "'.$result['message'].'"', 2);
     
     }
 
@@ -85,12 +125,82 @@ function clientbaseconnect_settings_get()
 
     $settings = $cbc_data_taker->get_settings();
 
-    if ($settings) $result = ['code' => 0, 'message' => 'Success.', 'data' => $settings];
-    else {
+    if ($settings) {
 
-        $result = ['code' => -2, 'message' => 'Database query failure.'];
+        $result = clientbaseconnect_results(0);
 
-        $cbc_logger->log('/clientbaseconnect/v1/settings/set — answer code -2: "Database query failure."', 2);
+        $result['data'] = $settings;
+
+    } else {
+
+        $result = clientbaseconnect_results(-2);
+
+        $cbc_logger->log('/clientbaseconnect/v1/settings/set — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+    }
+
+    return $result;
+
+}
+
+function clientbaseconnect_table_set()
+{
+
+    global $cbc_logger;
+    global $cbc_data_taker;
+
+    if (isset($_POST['table'])) {
+
+        if ($_POST['table'] > 0) {
+
+            if ($cbc_data_taker->set_table($_POST['table'])) $result = clientbaseconnect_results(0);
+            else {
+
+                $result = clientbaseconnect_results(-2);
+
+                $cbc_logger->log('clientbaseconnect/v1/table/set — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+            }
+
+        } else {
+
+            $result = clientbaseconnect_results(1, 'Incorrect table number.');
+
+            $cbc_logger->log('clientbaseconnect/v1/table/set — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+        }
+
+    } else {
+
+        $result = clientbaseconnect_results(-1);
+
+        $cbc_logger->log('clientbaseconnect/v1/table/set — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+    }
+
+    return $result;
+
+}
+
+function clientbaseconnect_table_get()
+{
+
+    global $cbc_logger;
+    global $cbc_data_taker;
+
+    $table = $cbc_data_taker->get_table();
+
+    if ($table) {
+        
+        $result = clientbaseconnect_results(0);
+
+        $result['data'] = $table;
+    
+    } else {
+
+        $result = clientbaseconnect_results(-2);
+
+        $cbc_logger->log('clientbaseconnect/v1/table/get — answer code '.$result['code'].': "'.$result['message'].'"', 2);
 
     }
 
