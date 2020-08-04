@@ -3,7 +3,7 @@
  * Plugin Name: ClentBase Connect
  * Plugin URI: https://github.com/drnoisier/wp-plugin-clientbase-connect
  * Description: WordPress-плагин, предназначенный для экспорта данных о пользователях в CRM-систему на платформе "Клиентская база" .
- * Version: 0.34
+ * Version: 0.4
  * Author: Дмитрий Шумилин
  * Author URI: mailto://dmitri.shumilinn@yandex.ru
  */
@@ -27,10 +27,12 @@
 require_once plugin_dir_path(__FILE__).'classes/interfaces/ClientBaseAPIInterface.php';
 require_once plugin_dir_path(__FILE__).'classes/interfaces/CBConnectTableInterface.php';
 require_once plugin_dir_path(__FILE__).'classes/interfaces/CBCDataTakerInterface.php';
+require_once plugin_dir_path(__FILE__).'classes/interfaces/CBCLoggerInterface.php';
 
 require_once plugin_dir_path(__FILE__).'classes/ClientBaseAPI.php';
 require_once plugin_dir_path(__FILE__).'classes/CBConnectTable.php';
 require_once plugin_dir_path(__FILE__).'classes/CBCDataTaker.php';
+require_once plugin_dir_path(__FILE__).'classes/CBCLogger.php';
 
 define('CBAPI_CREATE', 'create');
 define('CBAPI_READ', 'read');
@@ -53,6 +55,8 @@ if (!file_exists(POPPER_DIR)) @file_put_contents(POPPER_DIR, file_get_contents('
 
 if (!file_exists(JQUERY_DIR)) file_put_contents(JQUERY_DIR, file_get_contents('https://code.jquery.com/jquery-3.5.1.js'));
 
+$cbc_logger = new CBCLogger;
+
 session_start(['name' => 'clientbase_connect_session']);
 
 $cbc_csrf_session_status = session_status();
@@ -63,26 +67,17 @@ switch ($cbc_csrf_session_status) {
         define('CBC_CSRF', true);
 
         $cbc_csrf_hash_key = 'key_'.time();
-        $cbc_csrf_hash_value = password_hash('zfgsw4tergzfdga4yz0zd943423sdsdg3', PASSWORD_DEFAULT);
+        $cbc_csrf_hash_value = htmlspecialchars(password_hash('zfgsw4tergzfdga4yz0zd943423sdsdg3', PASSWORD_DEFAULT));
 
         $_SESSION[$cbc_csrf_hash_key] = $cbc_csrf_hash_value;
 
         break;
 
     default:
+
         define('CBC_CSRF', false);
 
-        if ($cbc_csrf_session_status === PHP_SESSION_NONE) {
-
-            $cbc_csrf_log_time = time();
-            $cbc_csrf_log_name = $cbc_csrf_log_time.'.log';
-
-            if (file_exists(plugin_dir_path(__FILE__).'logs/'.$cbc_csrf_log_name)) $cbc_csrf_log_content = file_get_contents(plugin_dir_path(__FILE__).'logs/'.$cbc_csrf_log_name)."\n";
-            else $cbc_csrf_log_content = '';
-
-            file_put_contents(plugin_dir_path(__FILE__).'logs/'.$cbc_csrf_log_name, $cbc_csrf_log_content.date('Y-m-D H:i:s').': An error occurred while creating the session.');
-
-        }
+        if ($cbc_csrf_session_status === PHP_SESSION_NONE) $cbc_logger->log('An error occurred while creating the session.', 2);
 
         break;
     
