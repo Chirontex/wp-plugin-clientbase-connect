@@ -26,5 +26,7 @@ interface CBCDataTakerInterface
     public function get_table();
     public function set_field(string $field, string $meta_entity);
     public function get_fields();
+    public function delete_field(string $key);
+    public function delete_whole_table();
 
 }

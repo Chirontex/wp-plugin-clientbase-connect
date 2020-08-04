@@ -126,6 +126,34 @@ class CBCDataTaker implements CBCDataTakerInterface
 
     }
 
+    public function delete_field(string $key)
+    {
+
+        return $this->cbct->delete($key);
+
+    }
+
+    public function delete_whole_table()
+    {
+
+        $result = $this->cbct->delete('table');
+
+        $fields = $this->get_fields();
+
+        if ($fields) {
+
+            foreach ($fields as $key => $value) {
+                
+                $result = $result and $this->cbct->delete($key);
+
+            }
+
+        } else $result = false;
+
+        return $result;
+
+    }
+
     protected function get_results_sorter(array $get_results)
     {
 
