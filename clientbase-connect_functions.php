@@ -21,9 +21,6 @@ function clientbaseconnect_permission_check()
 
     global $cbc_logger;
 
-    if (is_object($cbc_logger)) $logger = $cbc_logger;
-    else $logger = new CBCLogger;
-
         if (CBC_CSRF) {
 
             if (isset($_POST['hash']) && isset($_POST['hash_key'])) {
@@ -33,7 +30,7 @@ function clientbaseconnect_permission_check()
                     
                     $result = false;
 
-                    $logger->log('The hash did not match. A CSRF-attack may have occurred.', 1);
+                    $cbc_logger->log('The hash did not match. A CSRF-attack may have occurred.', 1);
                 
                 }
 
@@ -41,11 +38,61 @@ function clientbaseconnect_permission_check()
                 
                 $result = false;
 
-                $logger->log('Hash arguments were not passed.', 2);
+                $cbc_logger->log('Hash arguments were not passed.', 2);
             
             }
 
         } else $result = true;
+
+    return $result;
+
+}
+
+function clientbaseconnect_settings_set()
+{
+
+    global $cbc_logger;
+    global $cbc_data_taker;
+
+    if (isset($_POST['url']) && isset($_POST['login']) && isset($_POST['key'])) {
+
+        if ($cbc_data_taker->set_settings(trim($_POST['url']), trim($_POST['login']), trim($_POST['key']))) $result = ['code' => 0, 'message' => 'Success.'];
+        else {
+
+            $result = ['code' => -2, 'message' => 'Database query failure.'];
+
+            $cbc_logger->log('/clientbaseconnect/v1/settings/set — answer code -2: "Database query failure."', 2);
+
+        }
+
+    } else {
+        
+        $result = ['code' => -1, 'message' => 'Too few arguments for this request.'];
+
+        $cbc_logger->log('/clientbaseconnect/v1/settings/set — answer code -1: "Too few arguments for this request."', 2);
+    
+    }
+
+    return $result;
+
+}
+
+function clientbaseconnect_settings_get()
+{
+
+    global $cbc_logger;
+    global $cbc_data_taker;
+
+    $settings = $cbc_data_taker->get_settings();
+
+    if ($settings) $result = ['code' => 0, 'message' => 'Success.', 'data' => $settings];
+    else {
+
+        $result = ['code' => -2, 'message' => 'Database query failure.'];
+
+        $cbc_logger->log('/clientbaseconnect/v1/settings/set — answer code -2: "Database query failure."', 2);
+
+    }
 
     return $result;
 
