@@ -20,12 +20,15 @@ class CBCDataTaker implements CBCDataTakerInterface
 {
 
     public $cbct;
+    public $logger;
 
     public function __construct(object $cbct)
     {
 
         if (in_array('CBConnectTableInterface', class_implements($cbct))) $this->cbct = $cbct;
         else $this->cbct = new CBConnectTable(DB_NAME);
+
+        $this->logger = new CBCLogger;
 
     }
 
@@ -42,8 +45,13 @@ class CBCDataTaker implements CBCDataTakerInterface
 
         $select = $this->cbct->select("SELECT t.option_key, t.option_value FROM ".$this->cbct->db_name.".".$this->cbct->db_prefix."clientbaseconnect_options AS t WHERE t.option_key = 'url' OR t.option_key = 'login' OR t.option_key = 'key'", ARRAY_A);
 
-        if (count($select) === 3) $result = $this->get_results_sorter($select);
-        else $result = false;
+        if (count($select) === 3) {
+            
+            $result = $this->get_results_sorter($select);
+
+            if (!$result) $this->logger->log('Something is wrong with CBCDataTaker::get_settings().', 2);
+        
+        } else $result = false;
 
         return $result;
 
@@ -64,10 +72,21 @@ class CBCDataTaker implements CBCDataTakerInterface
 
         if (is_array($select)) {
 
-            if (empty($select)) $result = false;
-            else $result = (int)$select[0]['option_value'];
+            if (empty($select)) {
+                
+                $result = false;
 
-        } else $result = false;
+                $this->logger->log('Table number isn\'t specified in DB.', 1);
+            
+            } else $result = (int)$select[0]['option_value'];
+
+        } else {
+            
+            $result = false;
+
+            $this->logger->log('Something is wrong with CBCDataTaker::get_table().', 2);
+        
+        }
 
         return $result;
 
@@ -95,7 +114,13 @@ class CBCDataTaker implements CBCDataTakerInterface
             if (empty($select)) $result = false;
             else $result = $this->get_results_sorter($select);
 
-        } else $result = false;
+        } else {
+            
+            $result = false;
+
+            $this->logger->log('Something is wrong with CBCDataTaker::get_fields().', 2);
+        
+        }
 
         return $result;
 
