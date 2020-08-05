@@ -35,7 +35,109 @@ class CBConnect implements CBConnectInterface
 
         if (empty($cbapi_settings['url']) || empty($cbapi_settings['login']) || empty($cbapi_settings['key'])) $this->logger->log('Too few settings given to CBConnect.', 2);
 
-        $this->cbapi = new ClientBaseAPI($cbapi_settings['url'], $cbapi_settings['login'], $cbapi_settings['key']);
+        $this->cbapi = new ClientBaseAPI((string)$cbapi_settings['url'], (string)$cbapi_settings['login'], (string)$cbapi_settings['key']);
+
+    }
+
+    public function row_create(array $data, bool $cals = true)
+    {
+
+        $table = $this->data_taker->get_table();
+
+        if ($table) {
+
+            $fields = $this->data_taker->get_fields();
+
+            if ($fields) {
+
+                $command = [
+                    'table_id' => $table,
+                    'cals' => $cals,
+                    'data' => ['row' => []]
+                ];
+
+                foreach ($fields as $field => $meta_entity) {
+                    
+                    $command['data']['row'][(string)$field] = (string)$data[$meta_entity];
+
+                }
+
+                $create = $this->cbapi->crud(CBAPI_CREATE, $command);
+
+                if ($create['code'] === 0) $result = $create['id'];
+                else {
+
+                    $result = false;
+
+                    $this->logger->log('Row creation failed. CRM answer code: '.$create['code'].'. CRM answer message: "'.$create['message'].'"', 2);
+
+                }
+
+            } else {
+
+                $result = false;
+
+                $this->logger->log('Problems with gettings fields in CBConnect:row_create().', 2);
+
+            }
+
+        } else {
+            
+            $result = false;
+
+            $this->logger->log('Problems with getting table number in CBConnect::row_create().', 2);
+        
+        }
+
+        return $result;
+
+    }
+
+    public function row_read(array $conditions, bool $cals = true, array $sort = ['id' => 'ASC'], int $start = 0, int $limit = 1000000)
+    {
+
+        $table = $this->data_taker->get_table();
+
+        if ($table) {
+
+            if ($start < 0) $start = 0;
+
+            if ($limit < 1) $limit = 1000000;
+
+            if (empty($conditions)) $conditions = ['status' => ['term' => '=', 'value' => 0, 'union' => 'AND']];
+
+            $command = [
+                'table_id' => $table,
+                'cals' => $cals,
+                'fields' => [
+                    'row' => []
+                ],
+                'filter' => ['row' => $conditions],
+                'sort' => ['row' => $sort],
+                'start' => $start,
+                'limit' => $limit
+            ];
+
+            $read = $this->cbapi->crud(CBAPI_READ, $command);
+
+            if ($read['code'] === 0) $result = $read['data'];
+            else {
+
+                $result = false;
+
+                $this->logger->log('Row reading failed. CRM answer code: '.$read['code'].'. CRM answer message: "'.$read['message'].'"', 2);
+
+            }
+
+        } else {
+
+            $result = false;
+
+            $this->logger->log('Problems with getting table number in CBConnect::row_read().', 2);
+
+        }
+
+        return $result;
 
     }
 

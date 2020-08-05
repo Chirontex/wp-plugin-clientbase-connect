@@ -20,5 +20,7 @@ interface CBConnectInterface
 {
 
     public function __construct(array $cbapi_settings);
+    public function row_create(array $data, bool $cals = true);
+    public function row_read(array $conditions, bool $cals = true, array $sort = ['id' => 'ASC'], int $start = 0, int $limit = 1000000);
 
 }
