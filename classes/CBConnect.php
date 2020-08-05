@@ -141,4 +141,115 @@ class CBConnect implements CBConnectInterface
 
     }
 
+    public function row_update(array $data, array $conditions, bool $cals = true)
+    {
+
+        $table = $this->data_taker->get_table();
+
+        if ($table) {
+
+            $fields = $this->data_taker->get_fields();
+
+            if ($fields) {
+
+                $command = [
+                    'table_id' => $table,
+                    'cals' => $cals,
+                    'data' => ['row' => []],
+                    'filter' => ['row' => []]
+                ];
+
+                foreach ($fields as $field => $meta_entity) {
+                    
+                    $command['data']['row'][(string)$field] = (string)$data[$meta_entity];
+
+                }
+
+                if (empty($conditions)) {
+
+                    foreach ($command['data']['row'] as $field => $value) {
+                        
+                        $command['filter']['row'][$field] = ['term' => '=', 'value' => $value, 'union' => 'OR'];
+
+                    }
+
+                } else $command['filter']['row'] = $conditions;
+
+                $update = $this->cbapi->crud(CBAPI_UPDATE, $command);
+
+                if ($update['code'] === 0) $result = $update['count'];
+                else {
+
+                    $result = false;
+
+                    $this->logger->log('Rows updating failed. CRM answer code: '.$update['code'].'. CRM answer message: "'.$update['message'].'"', 2);
+
+                }
+
+            } else {
+
+                $result = false;
+
+                $this->logger->log('Problems with getting fields in CBConnect::row_update().', 2);
+
+            }
+
+        } else {
+
+            $result = false;
+
+            $this->logger->log('Problems with getting table number in CBConnect::row_update().', 2);
+
+        }
+
+        return $result;
+
+    }
+
+    public function row_delete(array $conditions, bool $cals = true)
+    {
+
+        $table = $this->data_taker->get_table();
+
+        if ($table) {
+
+            if (empty($conditions)) {
+
+                $result = false;
+
+                $this->logger->log('Empty conditions are not allowed.', 2);
+
+            } else {
+
+                $command = [
+                    'table_id' => $table,
+                    'cals' => $cals,
+                    'filter' => ['row' => $conditions]
+                ];
+
+                $delete = $this->cbapi->crud(CBAPI_DELETE, $command);
+
+                if ($delete['code'] === 0) $result = $delete['count'];
+                else {
+
+                    $result = false;
+
+                    $this->logger->log('Rows deleting failed. CRM answer code: '.$delete['code'].'. CRM answer message: "'.$delete['message'].'"', 2);
+
+                }
+
+            }
+
+        } else {
+
+            $result = false;
+
+            $this->logger->log('Problems with getting table number in CBConnect::row_delete().', 2);
+
+        }
+
+        return $result;
+
+    }
+
 }
