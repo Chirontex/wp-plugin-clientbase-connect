@@ -138,17 +138,21 @@ class CBCDataTaker implements CBCDataTakerInterface
 
         $result = $this->cbct->delete('table');
 
-        $fields = $this->get_fields();
+        if ($result) {
 
-        if ($fields) {
+            $fields = $this->get_fields();
 
-            foreach ($fields as $key => $value) {
-                
-                $result = $result and $this->cbct->delete($key);
+            if ($fields) {
 
-            }
+                foreach ($fields as $key => $value) {
+                    
+                    $result = $result and $this->cbct->delete($key);
 
-        } else $result = false;
+                }
+
+            } else $result = false;
+
+        }
 
         return $result;
 

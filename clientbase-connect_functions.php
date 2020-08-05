@@ -208,6 +208,25 @@ function clientbaseconnect_table_get()
 
 }
 
+function clientbaseconnect_table_massdelete()
+{
+
+    global $cbc_logger;
+    global $cbc_data_taker;
+
+    if ($cbc_data_taker->delete_whole_table()) $result = clientbaseconnect_results(0);
+    else {
+
+        $result = clientbaseconnect_results(-2);
+
+        $cbc_logger->log('clientbaseconnect/v1/table/massdelete — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+    }
+
+    return $result;
+
+}
+
 function clientbaseconnect_fields_set()
 {
 
@@ -268,6 +287,35 @@ function clientbaseconnect_fields_get()
         $result = clientbaseconnect_results(-2);
 
         $cbc_logger->log('clientbaseconnect/v1/fields/get — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+    }
+
+    return $result;
+
+}
+
+function clientbaseconnect_fields_delete()
+{
+
+    global $cbc_logger;
+    global $cbc_data_taker;
+
+    if (isset($_POST['key'])) {
+
+        if ($cbc_data_taker->delete_field((string)$_POST['key'])) $result = clientbaseconnect_results(0);
+        else {
+
+            $result = clientbaseconnect_results(-2);
+
+            $cbc_logger->log('clientbaseconnect/v1/fields/delete — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+        }
+
+    } else {
+
+        $result = clientbaseconnect_results(-1);
+
+        $cbc_logger->log('clientbaseconnect/v1/fields/delete — answer code '.$result['code'].': "'.$result['message'].'"', 2);
 
     }
 
