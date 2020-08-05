@@ -207,3 +207,70 @@ function clientbaseconnect_table_get()
     return $result;
 
 }
+
+function clientbaseconnect_fields_set()
+{
+
+    global $cbc_logger;
+    global $cbc_data_taker;
+
+    if (isset($_POST['fields'])) {
+
+        if (is_array($_POST['fields']) && !empty($_POST['fields'])) {
+
+            $set_result = true;
+
+            foreach ($_POST['fields'] as $key => $value) {
+                
+                $set_result = $set_result and $cbc_data_taker->set_field((string)$key, (string)$value);
+
+            }
+
+            if ($set_result) $result = clientbaseconnect_results(0);
+            else $result = clientbaseconnect_results(-2);
+
+        } else {
+
+            $result = clientbaseconnect_results(-3);
+
+            $cbc_logger->log('clientbaseconnect/v1/fields/set — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+        }
+
+    } else {
+
+        $result = clientbaseconnect_results(-1);
+
+        $cbc_logger->log('clientbaseconnect/v1/fields/set — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+    }
+
+    return $result;
+
+}
+
+function clientbaseconnect_fields_get()
+{
+
+    global $cbc_logger;
+    global $cbc_data_taker;
+
+    $data = $cbc_data_taker->get_fields();
+
+    if ($data) {
+
+        $result = clientbaseconnect_results(0);
+
+        $result['data'] = $data;
+
+    } else {
+
+        $result = clientbaseconnect_results(-2);
+
+        $cbc_logger->log('clientbaseconnect/v1/fields/get — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+    }
+
+    return $result;
+
+}
