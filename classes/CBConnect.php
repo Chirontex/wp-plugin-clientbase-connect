@@ -16,11 +16,27 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-interface ClientBaseAPIInterface
+class CBConnect implements CBConnectInterface
 {
 
-    public function __construct(string $url, string $login, string $key);
-    public function auth();
-    public function crud(string $func, array $command);
+    public $cbapi;
+    public $data_taker;
+    public $logger;
+
+    public function __construct(array $cbapi_settings)
+    {
+        
+        $this->logger = new CBCLogger;
+
+        global $cbc_data_taker;
+
+        if (in_array('CBCDataTakerInterface', class_implements($cbc_data_taker))) $this->data_taker = $cbc_data_taker;
+        else $this->data_taker = new CBCDataTaker(new CBConnectTable(DB_NAME));
+
+        if (empty($cbapi_settings['url']) || empty($cbapi_settings['login']) || empty($cbapi_settings['key'])) $this->logger->log('Too few settings given to CBConnect.', 2);
+
+        $this->cbapi = new ClientBaseAPI($cbapi_settings['url'], $cbapi_settings['login'], $cbapi_settings['key']);
+
+    }
 
 }

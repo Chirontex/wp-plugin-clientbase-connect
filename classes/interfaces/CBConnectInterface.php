@@ -16,11 +16,9 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-interface ClientBaseAPIInterface
+interface CBConnectInterface
 {
 
-    public function __construct(string $url, string $login, string $key);
-    public function auth();
-    public function crud(string $func, array $command);
+    public function __construct(array $cbapi_settings);
 
 }
