@@ -3,7 +3,7 @@
  * Plugin Name: ClentBase Connect
  * Plugin URI: https://github.com/drnoisier/wp-plugin-clientbase-connect
  * Description: WordPress-плагин, предназначенный для экспорта данных о пользователях в CRM-систему на платформе "Клиентская база" .
- * Version: 0.69
+ * Version: 0.7
  * Author: Дмитрий Шумилин
  * Author URI: mailto://dr.noisier@yandex.ru
  */
@@ -29,12 +29,14 @@ require_once plugin_dir_path(__FILE__).'classes/interfaces/CBConnectTableInterfa
 require_once plugin_dir_path(__FILE__).'classes/interfaces/CBCDataTakerInterface.php';
 require_once plugin_dir_path(__FILE__).'classes/interfaces/CBCLoggerInterface.php';
 require_once plugin_dir_path(__FILE__).'classes/interfaces/CBConnectInterface.php';
+require_once plugin_dir_path(__FILE__).'classes/interfaces/CBCUsersDataCollectorInterface.php';
 
 require_once plugin_dir_path(__FILE__).'classes/ClientBaseAPI.php';
 require_once plugin_dir_path(__FILE__).'classes/CBConnectTable.php';
 require_once plugin_dir_path(__FILE__).'classes/CBCDataTaker.php';
 require_once plugin_dir_path(__FILE__).'classes/CBCLogger.php';
 require_once plugin_dir_path(__FILE__).'classes/CBConnect.php';
+require_once plugin_dir_path(__FILE__).'classes/CBCUsersDataCollector.php';
 
 require_once plugin_dir_path(__FILE__).'clientbase-connect_functions.php';
 
@@ -89,12 +91,6 @@ switch ($cbc_csrf_session_status) {
 }
 
 $cbc_data_taker = new CBCDataTaker(new CBConnectTable(DB_NAME));
-
-add_action('admin_menu', function() {
-
-    add_menu_page('Client Base Connect', 'Client Base Connect', 8, plugin_dir_path(__FILE__).'clientbase-connect_admin.php');
-
-});
 
 add_action('rest_api_init', function() {
 
@@ -155,3 +151,9 @@ if ($cbc_settings) {
     //$cbc_cbapi = new ClientBaseAPI((string)$cbc_settings['url'], (string)$cbc_settings['login'], (string)$cbc_settings['key']);
 
 }
+
+add_action('admin_menu', function() {
+
+    add_menu_page('Client Base Connect', 'Client Base Connect', 8, plugin_dir_path(__FILE__).'clientbase-connect_admin.php');
+
+});
