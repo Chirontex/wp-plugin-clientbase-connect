@@ -70,4 +70,71 @@ class CBCUsersDataCollector implements CBCUsersDataCollectorInterface
 
     }
 
+    public function get_user_data(int $user_id, array $meta_entities)
+    {
+
+        global $wpdb;
+        global $table_prefix;
+
+        $user = $wpdb->get_results($wpdb->prepare("SELECT t.user_login, t.user_nicename, t.user_email, t.user_registered FROM ".DB_NAME.".".$table_prefix."users AS t WHERE t.ID = '%d'", $user_id), ARRAY_A);
+
+        if (is_array($user)) {
+
+            if (count($user) > 0) {
+
+                $where_meta = '';
+
+                $result = [];
+
+                foreach ($meta_entities as $meta) {
+                    
+                    if (empty($where_meta)) $where_meta .= $wpdb->prepare('t.meta_key = "%s"', (string)$meta);
+                    else $where_meta .= $wpdb->prepare(' OR t.meta_key = "%s"', (string)$meta);
+
+                    if (isset($user[$meta])) $result[$meta] = $user[$meta];
+
+                }
+
+                $usermeta = $wpdb->get_results($wpdb->prepare("SELECT t.meta_key, t.meta_value FROM ".DB_NAME.".".$table_prefix."usermeta AS t WHERE t.user_id = '%d'", $user_id)." AND (".$where_meta.")", ARRAY_A);
+
+                if (is_array($usermeta)) {
+
+                    if (count($usermeta) > 0) {
+
+                        foreach ($usermeta as $values) {
+                            
+                            if (array_search($values['meta_key'], $meta_entities) !== false) $result[$values['meta_key']] = $values['meta_value'];
+
+                        }
+
+                    } else $this->logger->log('User '.$user_id.' metadata did\'nt found while calling CBCUserDataCollector::get_user_data().', 1);
+
+                } else {
+
+                    if (empty($result)) $result = false;
+
+                    $this->logger->log('DB usermeta query failure in CBCUserDataCollector::get_user_data().', 2);
+
+                }
+
+            } else {
+
+                $result = false;
+
+                $this->logger->log('User wasn\'t found while calling CBCUsersDataCollector::get_user_data().', 1);
+
+            }
+            
+        } else {
+
+            $result = false;
+
+            $this->logger->log('DB users query failure in CBCUsersDataCollector::get_user_data().', 2);
+
+        }
+
+        return $result;
+
+    }
+
 }
