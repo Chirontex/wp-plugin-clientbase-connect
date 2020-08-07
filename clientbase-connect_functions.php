@@ -322,3 +322,75 @@ function clientbaseconnect_fields_delete()
     return $result;
 
 }
+
+function clientbaseconnect_user_create()
+{
+
+    global $cbc_logger;
+    global $cbc_data_taker;
+    global $client_base_connect;
+
+    if (in_array('CBConnectInterface', class_implements($client_base_connect))) {
+
+        if (isset($_POST['user_id'])) {
+
+            $data_collector = new CBCUsersDataCollector;
+
+            $fields = $cbc_data_taker->get_fields();
+
+            if ($fields) {
+
+                $user_data = $data_collector->get_user_data((int)$_POST['user_id'], $fields);
+
+                if ($user_data) {
+
+                    $row_create = $client_base_connect->row_create($user_data);
+
+                    if ($row_create) {
+
+                        $result = clientbaseconnect_results(0);
+                        $result['data'] = $row_create;
+
+                    } else {
+
+                        $result = clientbaseconnect_results(2, 'Data transfer to CRM failed.');
+
+                        $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+                    }
+
+                } else {
+
+                    $result = clientbaseconnect_results(-2);
+
+                    $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].' while taking user data: "'.$result['message'].'"', 2);
+
+                }
+
+            } else {
+
+                $result = clientbaseconnect_results(-2);
+
+                $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].' while query fields: "'.$result['message'].'"', 2);
+
+            }
+
+        } else {
+
+            $result = clientbaseconnect_results(-1);
+
+            $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+        }
+
+    } else {
+
+        $result = clientbaseconnect_results(6, 'Some kind of bad magic is happened with CBConnect object. Looks like it wasn\'t created when it must.');
+
+        $cbc_logger->log('clientbaseconnect/1/data/create_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+    }
+
+    return $result;
+
+}
