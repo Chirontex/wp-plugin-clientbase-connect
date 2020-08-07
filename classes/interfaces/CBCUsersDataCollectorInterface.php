@@ -20,7 +20,7 @@ interface CBCUsersDataCollectorInterface
 {
 
     public function __construct();
-    public function get_users_ids(string $category = 'subscriber');
+    public function get_users_ids(array $categories = ['subscriber']);
     public function get_user_data(int $user_id, array $meta_entities);
     
 }

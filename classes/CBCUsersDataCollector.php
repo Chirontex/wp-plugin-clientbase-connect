@@ -28,15 +28,28 @@ class CBCUsersDataCollector implements CBCUsersDataCollectorInterface
 
     }
 
-    public function get_users_ids(string $category = 'subscriber')
+    public function get_users_ids(array $categories = ['subscriber'])
     {
 
         global $wpdb;
         global $table_prefix;
 
-        $category = $wpdb->prepare("%s", $category);
+        $where_categories = '';
 
-        $select = $wpdb->get_results("SELECT t.user_id FROM ".DB_NAME.".".$table_prefix."usermeta AS t WHERE t.meta_key LIKE %capabilities% AND t.meta_value LIKE %".$category."%", ARRAY_A);
+        if (!empty($categories)) {
+
+            foreach ($categories as $category) {
+                
+                if (empty($where_categories)) $where_categories .= ' AND (t.meta_value LIKE %'.$wpdb->prepare("%s", $category).'%';
+                else $where_categories .= ' OR t.meta_value LIKE %'.$wpdb->prepare("%s", $category).'%';
+
+            }
+
+            $where_categories .= ')';
+
+        }
+
+        $select = $wpdb->get_results("SELECT t.user_id FROM ".DB_NAME.".".$table_prefix."usermeta AS t WHERE t.meta_key LIKE %capabilities%".$where_categories, ARRAY_A);
 
         if (is_array($select)) {
 

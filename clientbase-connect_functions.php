@@ -323,6 +323,33 @@ function clientbaseconnect_fields_delete()
 
 }
 
+function clientbaseconnect_users_ids()
+{
+
+    global $cbc_logger;
+
+    $data_collector = new CBCUsersDataCollector;
+
+    if (is_array($_POST['categories'])) $ids = $data_collector->get_users_ids($_POST['categories']);
+    else $ids = $data_collector->get_users_ids();
+
+    if ($ids) {
+
+        $result = clientbaseconnect_results(0);
+        $result['data'] = $ids;
+
+    } else {
+
+        $result = clientbaseconnect_results(-2);
+
+        $cbc_logger->log('clientbaseconnect/v1/data/get_ids — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+    }
+    
+    return $result;
+
+}
+
 function clientbaseconnect_user_create()
 {
 
