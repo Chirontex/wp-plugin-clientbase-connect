@@ -3,7 +3,7 @@
  * Plugin Name: ClentBase Connect
  * Plugin URI: https://github.com/drnoisier/wp-plugin-clientbase-connect
  * Description: WordPress-плагин, предназначенный для экспорта данных о пользователях в CRM-систему на платформе "Клиентская база" .
- * Version: 0.79
+ * Version: 0.81
  * Author: Дмитрий Шумилин
  * Author URI: mailto://dr.noisier@yandex.ru
  */
@@ -150,19 +150,52 @@ add_action('rest_api_init', function() {
 
     register_rest_route('clientbaseconnect/v1/data', '/create_user', [
         'methods' => 'POST',
-        'callback' => 'clientbaseconnect_user_create',
+        'callback' => function() {
+
+            global $cbc_logger;
+
+            if (isset($_POST['user_id'])) $result = clientbaseconnect_user_create((int)$_POST['user_id']);
+            else $result = clientbaseconnect_results(-1);
+
+            if ($result['code'] !== 0) $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+            return $result;
+
+        },
         'permission_callback' => 'clientbaseconnect_permission_check'
     ]);
 
     register_rest_route('clientbaseconnect/v1/data', '/read_user', [
         'methods' => 'POST',
-        'callback' => 'clientbaseconnect_user_read',
+        'callback' => function() {
+
+            global $cbc_logger;
+
+            if (isset($_POST['user_id'])) $result = clientbaseconnect_user_read((int)$_POST['user_id']);
+            else $result = clientbaseconnect_results(-1);
+
+            if ($result['code'] !== 0) $cbc_logger->log('clientbaseconnect/v1/data/read_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+            return $result;
+
+        },
         'permission_callback' => 'clientbaseconnect_permission_check'
     ]);
 
     register_rest_route('clientbaseconnect/v1/data', '/update_user', [
         'methods' => 'POST',
-        'callback' => 'clientbaseconnect_user_update',
+        'callback' => function() {
+
+            global $cbc_logger;
+
+            if (isset($_POST['user_id'])) $result = clientbaseconnect_user_update((int)$_POST['user_id']);
+            else $result = clientbaseconnect_results(-1);
+
+            if ($result['code'] !== 0) $cbc_logger->log('clientbaseconnect/v1/data/update_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+
+            return $result;
+
+        },
         'permission_callback' => 'clientbaseconnect_permission_check'
     ]);
 
@@ -177,3 +210,35 @@ add_action('admin_menu', function() {
     add_menu_page('Client Base Connect', 'Client Base Connect', 8, plugin_dir_path(__FILE__).'clientbase-connect_admin.php');
 
 });
+
+add_action('user_register', function($user_id) {
+
+    global $cbc_logger;
+    
+    $user_create = clientbaseconnect_user_create((int)$user_id);
+
+    if ($user_create['code'] !== 0) $cbc_logger->log('user_register, "'.$user_create['message'].'"', 2);
+
+});
+
+add_action('profile_update', function($user_id, $old_user_data) {
+
+    global $cbc_logger;
+
+    $user_update = clientbaseconnect_user_update((int)$user_id);
+
+    if ($user_update['code'] !== 0) {
+
+        $cbc_logger->log('profile_update, "'.$user_update['message'].'"', 2);
+
+        $user_create = clientbaseconnect_user_create((int)$user_id);
+
+        if ($user_create['code'] !== 0) $cbc_logger->log('updating user failed, creating user instead of, "'.$user_create['message'].'"', 2);
+
+    }
+
+}, 10, 2);
+
+add_action('added_user_meta', 'clientbaseconnect_user_meta', 10, 4);
+
+add_action('updated_user_meta', 'clientbaseconnect_user_meta', 10, 4);

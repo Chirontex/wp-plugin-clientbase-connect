@@ -350,16 +350,15 @@ function clientbaseconnect_users_ids()
 
 }
 
-function clientbaseconnect_user_create()
+function clientbaseconnect_user_create(int $user_id)
 {
 
-    global $cbc_logger;
     global $cbc_data_taker;
     global $client_base_connect;
 
     if (in_array('CBConnectInterface', class_implements($client_base_connect))) {
 
-        if (isset($_POST['user_id'])) {
+        if ($user_id > 0) {
 
             $data_collector = new CBCUsersDataCollector;
 
@@ -367,11 +366,11 @@ function clientbaseconnect_user_create()
 
             if ($fields) {
 
-                $user_data = $data_collector->get_user_data((int)$_POST['user_id'], $fields);
+                $user_data = $data_collector->get_user_data($user_id, $fields);
 
                 if ($user_data) {
 
-                    if (array_search('user_id', $fields) !== false) $user_data['user_id'] = (int)$_POST['user_id'];
+                    if (array_search('user_id', $fields) !== false) $user_data['user_id'] = $user_id;
 
                     $row_create = $client_base_connect->row_create($user_data);
 
@@ -380,60 +379,29 @@ function clientbaseconnect_user_create()
                         $result = clientbaseconnect_results(0);
                         $result['data'] = $row_create;
 
-                    } else {
+                    } else $result = clientbaseconnect_results(2, 'Data transfer to CRM failed.');
 
-                        $result = clientbaseconnect_results(2, 'Data transfer to CRM failed.');
+                } else $result = clientbaseconnect_results(-2);
 
-                        $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+            } else $result = clientbaseconnect_results(-2);
 
-                    }
+        } else $result = clientbaseconnect_results(-3);
 
-                } else {
-
-                    $result = clientbaseconnect_results(-2);
-
-                    $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].' while taking user data: "'.$result['message'].'"', 2);
-
-                }
-
-            } else {
-
-                $result = clientbaseconnect_results(-2);
-
-                $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].' while query fields: "'.$result['message'].'"', 2);
-
-            }
-
-        } else {
-
-            $result = clientbaseconnect_results(-1);
-
-            $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
-
-        }
-
-    } else {
-
-        $result = clientbaseconnect_results(6, 'Some kind of bad magic is happened with CBConnect object. Looks like it wasn\'t created when it must.');
-
-        $cbc_logger->log('clientbaseconnect/1/data/create_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
-
-    }
+    } else $result = clientbaseconnect_results(6, 'Some kind of bad magic is happened with CBConnect object. Looks like it wasn\'t created when it must.');
 
     return $result;
 
 }
 
-function clientbaseconnect_user_read()
+function clientbaseconnect_user_read(int $user_id, bool $cals = true, array $sort = ['id' => 'ASC'], int $start = 0, int $limit = 1000000)
 {
 
-    global $cbc_logger;
     global $cbc_data_taker;
     global $client_base_connect;
 
     if (in_array('CBConnectInterface', class_implements($client_base_connect))) {
 
-        if (isset($_POST['user_id'])) {
+        if ($user_id > 0) {
 
             $fields = $cbc_data_taker->get_fields();
 
@@ -441,19 +409,9 @@ function clientbaseconnect_user_read()
 
                 $id_field = array_search('user_id', $fields);
 
-                if (!$id_field) $cbc_logger->log('clientbaseconnect/v1/data/read_user — something is wrong with the user id field.', 2);
+                if ($start < 0) $start = 0;
 
-                if (isset($_POST['cals'])) $cals = (bool)$_POST['cals'];
-                else $cals = true;
-
-                if (is_array($_POST['sort'])) $sort = $_POST['sort'];
-                else $sort = ['id' => 'ASC'];
-
-                if (isset($_POST['start'])) $start = (int)$_POST['start'];
-                else $start = 0;
-
-                if (isset($_POST['limit'])) $limit = (int)$_POST['limit'];
-                else $limit = 1000000;
+                if ($limit < 1) $limit = 1000000;
 
                 $row_read = $client_base_connect->row_read([$id_field => ['term' => '=', 'value' => (int)$_POST['user_id'], 'union' => 'AND']], $cals, $sort, $start, $limit);
 
@@ -462,52 +420,27 @@ function clientbaseconnect_user_read()
                     $result = clientbaseconnect_results(0);
                     $result['data'] = $row_read;
 
-                } else {
+                } else $result = clientbaseconnect_results(2, 'Data getting from CRM failed.');
 
-                    $result = clientbaseconnect_results(2, 'Data getting from CRM failed.');
+            } else $result = clientbaseconnect_results(-2);
 
-                    $cbc_logger->log('clientbaseconnect/v1/data/create_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+        } else $result = clientbaseconnect_results(-3);
 
-                }
-
-            } else {
-
-                $result = clientbaseconnect_results(-2);
-
-                $cbc_logger->log('clientbaseconnect/v1/data/read_user — answer code '.$result['code'].' while query fields: "'.$result['message'].'"', 2);
-
-            }
-
-        } else {
-
-            $result = clientbaseconnect_results(-1);
-
-            $cbc_logger->log('clientbaseconnect/v1/data/read_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
-
-        }
-
-    } else {
-
-        $result = clientbaseconnect_results(6, 'Some kind of bad magic is happened with CBConnect object. Looks like it wasn\'t created when it must.');
-
-        $cbc_logger->log('clientbaseconnect/1/data/read_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
-
-    }
+    } else $result = clientbaseconnect_results(6, 'Some kind of bad magic is happened with CBConnect object. Looks like it wasn\'t created when it must.');
 
     return $result;
 
 }
 
-function clientbaseconnect_user_update()
+function clientbaseconnect_user_update(int $user_id)
 {
 
-    global $cbc_logger;
     global $cbc_data_taker;
     global $client_base_connect;
 
     if (in_array('CBConnectInterface', class_implements($client_base_connect))) {
 
-        if (isset($_POST['user_id'])) {
+        if ($user_id > 0) {
 
             $data_collector = new CBCUsersDataCollector;
 
@@ -521,8 +454,6 @@ function clientbaseconnect_user_update()
 
                     $id_field = array_search('user_id', $fields);
 
-                    if (!$id_field) $cbc_logger->log('clientbaseconnect/v1/data/update_user — something is wrong with the user id field.', 2);
-
                     $row_update = $client_base_connect->row_update($user_data, [$id_field => ['term' => '=', 'value' => (int)$_POST['user_id'], 'union' => 'AND']]);
 
                     if ($row_update) {
@@ -530,46 +461,46 @@ function clientbaseconnect_user_update()
                         $result = clientbaseconnect_results(0);
                         $result['data'] = $row_update;
 
-                    } else {
+                    } else $result = clientbaseconnect_results(2, 'Data transfer to CRM failed.');
 
-                        $result = clientbaseconnect_results(2, 'Data transfer to CRM failed.');
+                } else $result = clientbaseconnect_results(-2);
 
-                        $cbc_logger->log('clientbaseconnect/v1/data/update_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
+            } else $result = clientbaseconnect_results(-2);
 
-                    }
+        } else $result = clientbaseconnect_results(-3);
 
-                } else {
+    } else $result = clientbaseconnect_results(6, 'Some kind of bad magic is happened with CBConnect object. Looks like it wasn\'t created when it must.');
 
-                    $result = clientbaseconnect_results(-2);
+    return $result;
 
-                    $cbc_logger->log('clientbaseconnect/v1/data/update_user — answer code '.$result['code'].' while taking user data: "'.$result['message'].'"', 2);
+}
 
-                }
+function clientbaseconnect_user_meta($mid, $object_id, $meta_key, $meta_value)
+{
 
-            } else {
+    global $cbc_logger;
+    global $cbc_data_taker;
 
-                $result = clientbaseconnect_results(-2);
+    $fields = $cbc_data_taker->get_fields();
 
-                $cbc_logger->log('clientbaseconnect/v1/data/update_user — answer code '.$result['code'].' while query fields: "'.$result['message'].'"', 2);
+    if ($fields) {
+
+        if (array_search($meta_key, $fields) !== false) {
+
+            $user_update = clientbaseconnect_user_update((int)$object_id);
+
+            if ($user_update['code'] !== 0) {
+
+                $cbc_logger->log('added_user_meta, "'.$user_update['message'].'"', 2);
+
+                $user_create = clientbaseconnect_user_create((int)$object_id);
+
+                if ($user_create['code'] !== 0) $cbc_logger->log('updating user meta failed, creating user instead of, "'.$user_create['message'].'"', 2);
 
             }
 
-        } else {
-
-            $result = clientbaseconnect_results(-1);
-
-            $cbc_logger->log('clientbaseconnect/v1/data/update_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
-
         }
 
-    } else {
-
-        $result = clientbaseconnect_results(6, 'Some kind of bad magic is happened with CBConnect object. Looks like it wasn\'t created when it must.');
-
-        $cbc_logger->log('clientbaseconnect/1/data/update_user — answer code '.$result['code'].': "'.$result['message'].'"', 2);
-
-    }
-
-    return $result;
+    } else $cbc_logger->log('added_user_meta, fields getting failed.', 1);
 
 }
