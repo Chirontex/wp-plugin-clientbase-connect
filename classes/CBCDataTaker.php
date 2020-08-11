@@ -35,8 +35,33 @@ class CBCDataTaker implements CBCDataTakerInterface
     public function set_settings(string $url, string $login, string $key)
     {
 
-        if ($this->cbct->insert('url', $url) && $this->cbct->insert('login', $login) && $this->cbct->insert('key', $key)) return true;
-        else return ($this->cbct->update('url', $url) && $this->cbct->update('login', $login) && $this->cbct->update('key', $key));
+        if ($this->get_settings()) {
+
+            if ($this->cbct->update('url', $url) === false) $result_url = false;
+            else $result_url = true;
+
+            if ($this->cbct->update('login', $login) === false) $result_login = false;
+            else $result_login = false;
+
+            if ($this->cbct->update('key', $key) === false) $result_key = false;
+            else $result_key = false;
+        
+        } else {
+
+            if ($this->cbct->insert('url', $url) === false) $result_url = false;
+            else $result_url = true;
+
+            if ($this->cbct->insert('login', $login) === false) $result_login = false;
+            else $result_login = false;
+
+            if ($this->cbct->insert('key', $key) === false) $result_key = false;
+            else $result_key = false;
+
+        }
+
+        $result = $result_url and $result_login and $result_key;
+
+        return $result;
 
     }
 

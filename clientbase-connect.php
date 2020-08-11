@@ -3,7 +3,7 @@
  * Plugin Name: ClentBase Connect
  * Plugin URI: https://github.com/drnoisier/wp-plugin-clientbase-connect
  * Description: WordPress-плагин, предназначенный для экспорта данных о пользователях в CRM-систему на платформе "Клиентская база" .
- * Version: 0.831
+ * Version: 0.85
  * Author: Дмитрий Шумилин
  * Author URI: mailto://dr.noisier@yandex.ru
  */
@@ -209,7 +209,7 @@ if ($cbc_settings) $client_base_connect = new CBConnect($cbc_settings);
 
 add_action('admin_menu', function() {
 
-    add_menu_page('Client Base Connect', 'Client Base Connect', 8, plugin_dir_path(__FILE__).'clientbase-connect_admin.php');
+    add_menu_page('Client Base Connect', 'CB Connect', 8, plugin_dir_path(__FILE__).'clientbase-connect_admin.php');
 
 });
 

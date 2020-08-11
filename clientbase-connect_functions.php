@@ -96,8 +96,11 @@ function clientbaseconnect_settings_set()
 
     if (isset($_POST['url']) && isset($_POST['login']) && isset($_POST['key'])) {
 
-        if ($cbc_data_taker->set_settings(trim($_POST['url']), trim($_POST['login']), trim($_POST['key']))) $result = clientbaseconnect_results(0);
-        else {
+        if ($cbc_data_taker->set_settings(trim($_POST['url']), trim($_POST['login']), trim($_POST['key']))) {
+            
+            $result = clientbaseconnect_results(0);
+        
+        } else {
 
             $result = clientbaseconnect_results(-2);
 

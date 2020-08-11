@@ -25,7 +25,7 @@ class CBCLogger implements CBCLoggerInterface
     public function __construct()
     {
         
-        $this->logs_dir = plugin_dir_path(__FILE__).'logs/';
+        $this->logs_dir = substr(plugin_dir_path(__FILE__), 0, strpos(plugin_dir_path(__FILE__), 'classes') - 1).'\\logs\\';
 
     }
 
@@ -42,7 +42,7 @@ class CBCLogger implements CBCLoggerInterface
         if (file_exists($this->logs_dir.$log_name)) $log_content = file_get_contents($this->logs_dir.$log_name)."\n";
         else $log_content = '';
 
-        $log_message = date('Y-m-d H:i:s', $log_time).' + '.time() - $log_time.' || '.$level_string.': '.$message;
+        $log_message = date('Y-m-d H:i:s').' || '.$level_string.': '.$message;
 
         $this->last_log = $log_message;
 
