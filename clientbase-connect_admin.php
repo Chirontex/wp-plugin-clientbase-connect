@@ -33,8 +33,7 @@ else { ?><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.
 <script>
 <?php
 if ($cbc_settings) { ?>var cbc_settings_are_set = true;<?php }
-else { ?>var cbc_settings_are_set = false;<?php }
-?>
+else { ?>var cbc_settings_are_set = false;<?php } ?>
 </script>
 <div class="container">
     <div class="row">
@@ -58,7 +57,7 @@ else { ?>var cbc_settings_are_set = false;<?php }
                 </p>
                 <p style="text-align: center;">
                     <button type="button" class="btn btn-primary" id="cbc_settings_save_button" onclick="cbc_settings_set();">Сохранить</button>
-                    <button type="button" class="btn btn-secondary" id="cbc_settings_back_button" hidden="">Вернуться</button>
+                    <button type="button" class="btn btn-secondary" id="cbc_settings_back_button" hidden="" disabled="">Вернуться к таблице</button>
                 </p>
             </div>
             <p id="clientbase-connect-status" style="text-align: center;"></p>
@@ -66,3 +65,4 @@ else { ?>var cbc_settings_are_set = false;<?php }
         <div class="col-xs-0 col-sm-0 col-md-4 col-lg-4"></div>
     </div>
 </div>
+<script>cbc_settings_check();</script>
