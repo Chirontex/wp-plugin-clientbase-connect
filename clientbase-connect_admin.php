@@ -28,14 +28,16 @@ else { ?><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper
 if (file_exists(JQUERY_DIR)) { ?><script type="text/javascript" src="<?= plugin_dir_url(__FILE__) ?>/js/jquery-3.5.1.js"></script><?php }
 else { ?><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script><?php } ?>
 <script type="text/javascript" src="<?= plugin_dir_url(__FILE__) ?>/js/clientbase-connect-script.js"></script>
+<input type="hidden" id="cbc_csrf_hash_key" value="<?= $cbc_csrf_hash_key ?>">
+<input type="hidden" id="cbc_scrf_hash_value" value="<?= $cbc_csrf_hash_value ?>">
 <div class="container">
     <div class="row">
         <div class="col-xs-0 col-sm-0 col-md-4 col-lg-4"></div>
         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <br />
+            <h3 style="text-align: center;">Client Base Connect</h3>
+            <br />
             <div id="clientbase-connect-main">
-                <br />
-                <h3 style="text-align: center;">Client Base Connect</h3>
-                <br />
                 <p>
                     <label for="cbc_settings_url">URL:</label><br>
                     <input type="text" class="form-control" id="cbc_settings_url" required="">
@@ -48,9 +50,9 @@ else { ?><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.
                     <label for="cbc_settings_key">Ключ доступа:</label><br>
                     <input type="text" class="form-control" id="cbc_settings_key" required="">
                 </p>
-                <input type="hidden" id="cbc_csrf_hash_key" value="<?= $cbc_csrf_hash_key ?>">
-                <input type="hidden" id="cbc_scrf_hash_value" value="<?= $cbc_csrf_hash_value ?>">
-                <button type="button" class="btn btn-primary">Сохранить</button>
+                <p style="text-align: center;">
+                    <button type="button" class="btn btn-primary">Сохранить</button>
+                </p>
             </div>
         </div>
         <div class="col-xs-0 col-sm-0 col-md-4 col-lg-4"></div>
