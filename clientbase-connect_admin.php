@@ -16,4 +16,43 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+if (file_exists(BOOTSTRAP_CSS_DIR)) { ?><link type="text/css" rel="stylesheet" href="<?= plugin_dir_url(__FILE__) ?>/css/bootstrap.min.css"><?php }
+else { ?><link type="text/css" rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"><?php }
 
+if (file_exists(BOOTSTRAP_JS_DIR)) { ?><script type="text/javascript" src="<?= plugin_dir_url(__FILE__) ?>/js/bootstrap.min.js"></script><?php }
+else { ?><script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script><?php }
+
+if (file_exists(POPPER_DIR)) { ?><script type="text/javascript" src="<?= plugin_dir_url(__FILE__) ?>/js/popper.min.js"></script><?php }
+else { ?><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script><?php }
+
+if (file_exists(JQUERY_DIR)) { ?><script type="text/javascript" src="<?= plugin_dir_url(__FILE__) ?>/js/jquery-3.5.1.js"></script><?php }
+else { ?><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script><?php } ?>
+<script type="text/javascript" src="<?= plugin_dir_url(__FILE__) ?>/js/clientbase-connect-script.js"></script>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-0 col-sm-0 col-md-4 col-lg-4"></div>
+        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div id="clientbase-connect-main">
+                <br />
+                <h3 style="text-align: center;">Client Base Connect</h3>
+                <br />
+                <p>
+                    <label for="cbc_settings_url">URL:</label><br>
+                    <input type="text" class="form-control" id="cbc_settings_url" required="">
+                </p>
+                <p>
+                    <label for="cbc_settings_login">Логин:</label><br>
+                    <input type="text" class="form-control" id="cbc_settings_login" required="">
+                </p>
+                <p>
+                    <label for="cbc_settings_key">Ключ доступа:</label><br>
+                    <input type="text" class="form-control" id="cbc_settings_key" required="">
+                </p>
+                <input type="hidden" id="cbc_csrf_hash_key" value="<?= $cbc_csrf_hash_key ?>">
+                <input type="hidden" id="cbc_scrf_hash_value" value="<?= $cbc_csrf_hash_value ?>">
+                <button type="button" class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+        <div class="col-xs-0 col-sm-0 col-md-4 col-lg-4"></div>
+    </div>
+</div>
