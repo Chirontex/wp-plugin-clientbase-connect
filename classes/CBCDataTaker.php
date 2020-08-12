@@ -29,6 +29,7 @@ class CBCDataTaker implements CBCDataTakerInterface
         else $this->cbct = new CBConnectTable(DB_NAME);
 
         $this->logger = new CBCLogger;
+        $this->logger->logging_level = 2;
 
     }
 

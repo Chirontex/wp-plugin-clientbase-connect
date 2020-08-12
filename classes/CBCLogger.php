@@ -21,6 +21,7 @@ class CBCLogger implements CBCLoggerInterface
 
     public $logs_dir;
     public $last_log;
+    public $logging_level;
 
     public function __construct()
     {
@@ -46,7 +47,8 @@ class CBCLogger implements CBCLoggerInterface
 
         $this->last_log = $log_message;
 
-        return file_put_contents($this->logs_dir.$log_name, $log_content.$log_message);
+        if ($this->logging_level <= $level) return file_put_contents($this->logs_dir.$log_name, $log_content.$log_message);
+        else return false;
 
     }
 
