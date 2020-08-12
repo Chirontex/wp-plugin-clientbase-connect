@@ -57,6 +57,7 @@ else { ?>var cbc_settings_are_set = false;<?php } ?>
                 </p>
                 <p style="text-align: center;">
                     <button type="button" class="btn btn-primary" id="cbc_settings_save_button" onclick="cbc_settings_set();">Сохранить</button>
+                    <span> </span>
                     <button type="button" class="btn btn-secondary" id="cbc_settings_back_button" hidden="" disabled="">Вернуться к таблице</button>
                 </p>
             </div>

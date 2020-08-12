@@ -45,19 +45,19 @@ function cbc_table_generate()
 
     request.done(function(answer) {
 
-        let main = document.querySelector('#clientbase-connect-main');
+        const main = document.querySelector('#clientbase-connect-main');
 
-        let row = document.createElement('div');
+        const row = document.createElement('div');
         row.setAttribute('class', 'row');
 
         main.appendChild(row);
 
-        let col_1 = document.createElement('div');
+        const col_1 = document.createElement('div');
         col_1.setAttribute('class', 'col-xs-6 col-sm-6 col-md-6 col-lg-6');
 
         row.appendChild(col_1);
 
-        let col_2 = document.createElement('div');
+        const col_2 = document.createElement('div');
         col_2.setAttribute('class', 'col-xs-6 col-sm-6 col-md-6 col-lg-6');
 
         row.appendChild(col_2);
@@ -65,13 +65,13 @@ function cbc_table_generate()
         let p = document.createElement('p');
         col_1.appendChild(p);
 
-        let label = document.createElement('label');
+        const label = document.createElement('label');
         label.setAttribute('for', 'cbc_table_number');
 
         p.appendChild(label);
         label.innerHTML = 'Номер таблицы:';
 
-        let input = document.createElement('input');
+        const input = document.createElement('input');
         input.setAttribute('type', 'text');
         input.setAttribute('id', 'cbc_table_number');
         input.setAttribute('class', 'form-control');
@@ -79,6 +79,14 @@ function cbc_table_generate()
         if (answer['code'] === 0) input.setAttribute('value', answer['data']);
 
         p.appendChild(input);
+
+        p = document.createElement('p');
+
+        main.appendChild(p);
+
+        p.innerHTML = 'Поля таблицы:';
+
+        cbc_fields_generate();
 
     });
 
@@ -90,7 +98,136 @@ function cbc_table_generate()
 
 function cbc_fields_generate()
 {
-    
+    const hash_key = document.querySelector('#cbc_csrf_hash_key').value;
+    const hash_value = document.querySelector('#cbc_csrf_hash_value').value;
+
+    var request = $.ajax({
+        url: "/wp-json/clientbaseconnect/v1/fields/get",
+        method: "POST",
+        data: {hash: hash_value, hash_key: hash_key},
+        dataType: "json"
+    });
+
+    request.done(function(answer) {
+
+        const main = document.querySelector('#clientbase-connect-main');
+
+        const row = document.createElement('div');
+        row.setAttribute('class', 'row');
+
+        main.appendChild(row);
+
+        const col_1 = document.createElement('div');
+        col_1.setAttribute('class', 'col-xs-6 col-sm-6 col-md-6 col-lg-6');
+
+        row.appendChild(col_1);
+
+        const col_2 = document.createElement('div');
+        col_2.setAttribute('class', 'col-xs-6 col-sm-6 col-md-6 col-lg-6');
+
+        row.appendChild(col_2);
+
+        var p;
+        //var label;
+        var input;
+
+        if (answer['code'] === 0)
+        {
+            const fields = answer['data'].keys();
+
+            for (let i = 0; i < fields.length; i++)
+            {
+                p = document.createElement('p');
+
+                col_1.appendChild(p);
+
+                input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('class', 'form-control');
+                input.setAttribute('id', 'cbc-field-'+i);
+                input.setAttribute('value', fields[i]);
+                
+                p.appendChild(input);
+            }
+
+            for (let i = 0; i < answer['data'].length; i++)
+            {
+                p = document.createElement('p');
+
+                col_2.appendChild(p);
+
+                input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('class', 'form-control');
+                input.setAttribute('id', 'cbc-usermeta-'+i);
+                input.setAttribute('value', answer['data'][i]);
+
+                p.appendChild(input);
+
+                if (answer['data'][i] == 'user_id') input.setAttribute('disabled', '');
+
+            }
+        }
+        else
+        {
+            p = document.createElement('p');
+
+            col_1.appendChild(p);
+
+            input = document.createElement('input');
+            input.setAttribute('type', 'text');
+            input.setAttribute('class', 'form-control');
+            input.setAttribute('id', 'cbc-field-0');
+
+            p.appendChild(input);
+
+            p = document.createElement('p');
+
+            col_2.appendChild(p);
+
+            input = document.createElement('input');
+            input.setAttribute('type', 'text');
+            input.setAttribute('class', 'form-control');
+            input.setAttribute('id', 'cbc-usermeta-0');
+            input.setAttribute('value', 'user_id');
+            input.setAttribute('disabled', '');
+
+            p.appendChild(input);
+        }
+
+        p = document.createElement('p');
+        p.setAttribute('style', 'text-align: center;');
+
+        main.appendChild(p);
+
+        let button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.setAttribute('class', 'btn btn-primary');
+
+        p.appendChild(button);
+
+        button.innerHTML = 'Сохранить';
+
+        let span = document.createElement('span');
+
+        p.appendChild(span);
+
+        span.innerHTML = ' ';
+
+        button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.setAttribute('class', 'btn btn-secondary');
+
+        p.appendChild(button);
+
+        button.innerHTML = 'Вернуться';
+
+    });
+
+    request.fail(function(jqXHR, textStatus) {
+        console.log(jqXHR);
+        document.querySelector('#clientbase-connect-status').innerHTML = 'Ошибка AJAX-запроса. "'+textStatus+'"';
+    });
 }
 
 function cbc_settings_set()
@@ -140,7 +277,8 @@ function cbc_settings_set()
 
             if (back_button.hasAttribute('disabled')) back_button.removeAttribute('disabled');
 
-            cbc_setter('settings', main.innerHTML);
+            //cbc_setter('settings', main.innerHTML);
+            window.cbc_settings_buffer = main.innerHTML;
 
             if (is_set) status.innerHTML = 'Настройки соединения сохранены.';
             else {
@@ -175,7 +313,8 @@ function cbc_settings_check()
 
         if (back_button.hasAttribute('disabled')) back_button.removeAttribute('disabled');
 
-        cbc_setter('settings', main.innerHTML);
+        //cbc_setter('settings', main.innerHTML);
+        window.cbc_settings_buffer = main.innerHTML;
         main.innerHTML = '';
         cbc_table_generate();
     }

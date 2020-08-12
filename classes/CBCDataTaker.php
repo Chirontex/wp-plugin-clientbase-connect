@@ -136,7 +136,13 @@ class CBCDataTaker implements CBCDataTakerInterface
 
         if (is_array($select)) {
 
-            if (empty($select)) $result = false;
+            if (empty($select)) {
+                
+                $result = false;
+
+                $this->logger->log('Fields aren\'t specified in DB', 1);
+            
+            }
             else $result = $this->get_results_sorter($select);
 
         } else {
