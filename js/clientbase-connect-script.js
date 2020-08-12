@@ -30,8 +30,8 @@ function cbc_table_back()
         inputs[i].setAttribute('value', inputs[i].value);
     }
 
-    window.cbc_table_buffer = main.innerHTML;
-    main.innerHTML = window.cbc_settings_buffer;
+    cbc_table_buffer = main.innerHTML;
+    main.innerHTML = cbc_settings_buffer;
 
     status.innerHTML = '';
 }
@@ -48,16 +48,71 @@ function cbc_settings_back()
     login.setAttribute('value', login.value);
     key.setAttribute('value', key.value);
 
-    window.cbc_settings_buffer = main.innerHTML;
-    main.innerHTML = window.cbc_table_buffer;
+    cbc_settings_buffer = main.innerHTML;
+    main.innerHTML = cbc_table_buffer;
 
     status.innerHTML = '';
+}
+
+function cbc_field_create()
+{
+    const main = document.querySelector('#clientbase-connect-main');
+    const rows = main.getElementsByClassName('row');
+    const fields_row = rows[1];
+    const fields_row_divs = fields_row.getElementsByTagName('div');
+
+    let new_number = 1;
+
+    while (document.querySelector('#cbc_field_'+new_number))
+    {
+        new_number = new_number + 1;
+    }
+
+    const a = document.createElement('a');
+    a.setAttribute('href', 'javascript:void(0)');
+    a.setAttribute('id', 'cbc_field_delete_'+new_number);
+    a.setAttribute('onclick', 'cbc_field_delete('+new_number+');');
+
+    fields_row_divs[0].appendChild(a);
+
+    a.innerHTML = '<p>Удалить</p>';
+
+    let p = document.createElement('p');
+
+    fields_row_divs[0].appendChild(p);
+
+    let input = document.createElement('input');
+    input.setAttribute('type', 'text');
+    input.setAttribute('class', 'form-control');
+    input.setAttribute('id', 'cbc_field_'+new_number);
+
+    p.appendChild(input);
+
+    p = document.createElement('p');
+
+    fields_row_divs[1].appendChild(p);
+
+    p.innerHTML = 'поле '+(new_number + 1);
+
+    p = document.createElement('p');
+
+    fields_row_divs[1].appendChild(p);
+
+    input = document.createElement('input');
+    input.setAttribute('type', 'text');
+    input.setAttribute('class', 'form-control');
+    input.setAttribute('id', 'cbc_usermeta_'+new_number);
+
+    p.appendChild(input);
+
 }
 
 function cbc_table_generate()
 {
     const hash_key = document.querySelector('#cbc_csrf_hash_key').value;
     const hash_value = document.querySelector('#cbc_csrf_hash_value').value;
+
+    document.querySelector('#clientbase-connect-status').innerHTML = 'Идёт загрузка, подождите...';
 
     var request = $.ajax({
         url: "/wp-json/clientbaseconnect/v1/table/get",
@@ -110,6 +165,15 @@ function cbc_table_generate()
         main.appendChild(p);
 
         p.innerHTML = 'Поля таблицы:';
+
+        const a = document.createElement('a');
+        a.setAttribute('href', 'javascript:void(0)');
+        a.setAttribute('id', 'cbc_field_add');
+        a.setAttribute('onclick', 'cbc_field_create();');
+
+        main.appendChild(a);
+
+        a.innerHTML = '<p>Добавить поле</p>';
 
         cbc_fields_generate();
 
@@ -246,6 +310,8 @@ function cbc_fields_generate()
         p.appendChild(button);
 
         button.innerHTML = 'Вернуться к соединению';
+
+        document.querySelector('#clientbase-connect-status').innerHTML = '';
 
     });
 
