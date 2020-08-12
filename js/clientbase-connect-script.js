@@ -303,12 +303,24 @@ function cbc_fields_generate()
 
             col_1.appendChild(p);
 
+            p.innerHTML = 'Удаление невозможно';
+
+            p = document.createElement('p');
+
+            col_1.appendChild(p);
+
             input = document.createElement('input');
             input.setAttribute('type', 'text');
             input.setAttribute('class', 'form-control');
             input.setAttribute('id', 'cbc-field-0');
 
             p.appendChild(input);
+
+            p = document.createElement('p');
+
+            col_2.appendChild(p);
+
+            p.innerHTML = 'поле 1';
 
             p = document.createElement('p');
 
