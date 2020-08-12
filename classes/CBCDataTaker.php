@@ -85,8 +85,19 @@ class CBCDataTaker implements CBCDataTakerInterface
     public function set_table(int $table)
     {
 
-        if ($this->cbct->insert('table', (string)$table)) return true;
-        else return $this->cbct->update('table', (string)$table);
+        if ($this->get_table()) {
+
+            if ($this->cbct->update('table', (string)$table) === false) $result = false;
+            else $result = true;
+
+        } else {
+
+            if ($this->cbct->insert('table', (string)$table) === false) $result = false;
+            else $result = true;
+
+        }
+
+        return $result;
 
     }
 
@@ -122,10 +133,32 @@ class CBCDataTaker implements CBCDataTakerInterface
 
         if ($field === 'id' || $field === 'user_id' || $field === 'add_time' || $field === 'status' || substr($field, 0, 1) === 'f') {
 
-            if ($this->cbct->insert($field, $meta_entity)) return true;
-            else return $this->cbct->update($field, $meta_entity);
+            $fields = $this->get_fields();
 
-        } else return false;
+            if ($fields) {
+
+                if (isset($fields[$field])) {
+
+                    if ($this->cbct->update($field, $meta_entity) === false) $result = false;
+                    else $result = true;
+
+                } else {
+
+                    if ($this->cbct->insert($field, $meta_entity) === false) $result = false;
+                    else $result = true;
+
+                }
+
+            } else {
+
+                if ($this->cbct->insert($field, $meta_entity) === false) $result = false;
+                else $result = true;
+
+            }
+
+        } else $result = false;
+
+        return $result;
 
     }
 
@@ -160,14 +193,18 @@ class CBCDataTaker implements CBCDataTakerInterface
     public function delete_field(string $key)
     {
 
-        return $this->cbct->delete($key);
+        if ($this->cbct->delete($key) === false) $result = false;
+        else $result = true;
+
+        return $result;
 
     }
 
     public function delete_whole_table()
     {
 
-        $result = $this->cbct->delete('table');
+        if ($this->cbct->delete('table') === false) $result = false;
+        else $result = true;
 
         if ($result) {
 
@@ -176,8 +213,9 @@ class CBCDataTaker implements CBCDataTakerInterface
             if ($fields) {
 
                 foreach ($fields as $key => $value) {
-                    
-                    $result = $result and $this->cbct->delete($key);
+
+                    if ($this->cbct->delete($key) === false) $result = $result and false;
+                    else $result = $result and true;
 
                 }
 

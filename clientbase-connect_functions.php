@@ -249,7 +249,7 @@ function clientbaseconnect_fields_set()
             }
 
             if ($set_result) $result = clientbaseconnect_results(0);
-            else $result = clientbaseconnect_results(-2);
+            else $result = clientbaseconnect_results(4, 'Некоторые поля не были заданы. Скорее всего, они были указаны некорректно.');
 
         } else {
 
