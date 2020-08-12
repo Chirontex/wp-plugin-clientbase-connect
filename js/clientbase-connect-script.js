@@ -18,19 +18,6 @@
 var cbc_settings_buffer = '';
 var cbc_table_buffer = '';
 
-function cbc_getter(key)
-{
-    if (key === 'settings') return cbc_settings_buffer;
-    else if (key === 'table') return cbc_table_buffer;
-    else return false;
-}
-
-function cbc_setter(key, value)
-{
-    if (key === 'settings') cbc_settings_buffer = value;
-    else if (key === 'table') cbc_table_buffer = value;
-}
-
 function cbc_table_generate()
 {
     const hash_key = document.querySelector('#cbc_csrf_hash_key').value;
@@ -128,7 +115,6 @@ function cbc_fields_generate()
         row.appendChild(col_2);
 
         var p;
-        //var label;
         var input;
 
         if (answer['code'] === 0)
@@ -277,7 +263,6 @@ function cbc_settings_set()
 
             if (back_button.hasAttribute('disabled')) back_button.removeAttribute('disabled');
 
-            //cbc_setter('settings', main.innerHTML);
             window.cbc_settings_buffer = main.innerHTML;
 
             if (is_set) status.innerHTML = 'Настройки соединения сохранены.';
@@ -313,7 +298,6 @@ function cbc_settings_check()
 
         if (back_button.hasAttribute('disabled')) back_button.removeAttribute('disabled');
 
-        //cbc_setter('settings', main.innerHTML);
         window.cbc_settings_buffer = main.innerHTML;
         main.innerHTML = '';
         cbc_table_generate();
