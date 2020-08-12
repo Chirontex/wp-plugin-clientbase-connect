@@ -243,8 +243,8 @@ function clientbaseconnect_fields_set()
             $set_result = true;
 
             foreach ($_POST['fields'] as $key => $value) {
-                
-                $set_result = $set_result and $cbc_data_taker->set_field((string)$key, (string)$value);
+
+                if ($cbc_data_taker->set_field((string)$key, (string)$value) === false) $set_result = false;
 
             }
 

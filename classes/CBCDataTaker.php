@@ -156,7 +156,13 @@ class CBCDataTaker implements CBCDataTakerInterface
 
             }
 
-        } else $result = false;
+        } else {
+            
+            $result = false;
+
+            $this->logger->log('CBCDataTaker::set_field() — wrong field name "'.$field.'"', 1);
+        
+        }
 
         return $result;
 
