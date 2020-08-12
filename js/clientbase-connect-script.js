@@ -18,6 +18,42 @@
 var cbc_settings_buffer = '';
 var cbc_table_buffer = '';
 
+function cbc_table_back()
+{
+    const main = document.querySelector('#clientbase-connect-main');
+    const status = document.querySelector('#clientbase-connect-status');
+
+    const inputs = main.getElementsByTagName('input');
+
+    for (let i = 0; i < inputs.length; i++)
+    {
+        inputs[i].setAttribute('value', inputs[i].value);
+    }
+
+    window.cbc_table_buffer = main.innerHTML;
+    main.innerHTML = window.cbc_settings_buffer;
+
+    status.innerHTML = '';
+}
+
+function cbc_settings_back()
+{
+    const main = document.querySelector('#clientbase-connect-main');
+    const url = document.querySelector('#cbc_settings_url');
+    const login = document.querySelector('#cbc_settings_login');
+    const key = document.querySelector('#cbc_settings_key');
+    const status = document.querySelector('#clientbase-connect-status');
+
+    url.setAttribute('value', url.value);
+    login.setAttribute('value', login.value);
+    key.setAttribute('value', key.value);
+
+    window.cbc_settings_buffer = main.innerHTML;
+    main.innerHTML = window.cbc_table_buffer;
+
+    status.innerHTML = '';
+}
+
 function cbc_table_generate()
 {
     const hash_key = document.querySelector('#cbc_csrf_hash_key').value;
@@ -50,12 +86,14 @@ function cbc_table_generate()
         row.appendChild(col_2);
 
         let p = document.createElement('p');
+
         col_1.appendChild(p);
 
         const label = document.createElement('label');
         label.setAttribute('for', 'cbc_table_number');
 
         p.appendChild(label);
+
         label.innerHTML = 'Номер таблицы:';
 
         const input = document.createElement('input');
@@ -130,7 +168,7 @@ function cbc_fields_generate()
                 input = document.createElement('input');
                 input.setAttribute('type', 'text');
                 input.setAttribute('class', 'form-control');
-                input.setAttribute('id', 'cbc-field-'+i);
+                input.setAttribute('id', 'cbc_field_'+i);
                 input.setAttribute('value', fields[i]);
                 
                 p.appendChild(input);
@@ -145,7 +183,7 @@ function cbc_fields_generate()
                 input = document.createElement('input');
                 input.setAttribute('type', 'text');
                 input.setAttribute('class', 'form-control');
-                input.setAttribute('id', 'cbc-usermeta-'+i);
+                input.setAttribute('id', 'cbc_usermeta_'+i);
                 input.setAttribute('value', answer['data'][i]);
 
                 p.appendChild(input);
@@ -174,7 +212,7 @@ function cbc_fields_generate()
             input = document.createElement('input');
             input.setAttribute('type', 'text');
             input.setAttribute('class', 'form-control');
-            input.setAttribute('id', 'cbc-usermeta-0');
+            input.setAttribute('id', 'cbc_usermeta_0');
             input.setAttribute('value', 'user_id');
             input.setAttribute('disabled', '');
 
@@ -203,10 +241,11 @@ function cbc_fields_generate()
         button = document.createElement('button');
         button.setAttribute('type', 'button');
         button.setAttribute('class', 'btn btn-secondary');
+        button.setAttribute('onclick', 'cbc_table_back();');
 
         p.appendChild(button);
 
-        button.innerHTML = 'Вернуться';
+        button.innerHTML = 'Вернуться к соединению';
 
     });
 
