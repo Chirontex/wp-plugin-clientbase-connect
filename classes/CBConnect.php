@@ -30,8 +30,8 @@ class CBConnect implements CBConnectInterface
 
         global $cbc_data_taker;
 
-        if (in_array('CBCDataTakerInterface', class_implements($cbc_data_taker))) $this->data_taker = $cbc_data_taker;
-        else $this->data_taker = new CBCDataTaker(new CBConnectTable(DB_NAME));
+        if ($cbc_data_taker instanceof CBCDataTaker) $this->data_taker = $cbc_data_taker;
+        else $this->data_taker = new CBCDataTaker();
 
         if (empty($cbapi_settings['url']) || empty($cbapi_settings['login']) || empty($cbapi_settings['key'])) $this->logger->log('Too few settings given to CBConnect.', 2);
 

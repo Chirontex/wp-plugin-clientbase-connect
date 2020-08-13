@@ -34,22 +34,24 @@ class CBCUsersDataCollector implements CBCUsersDataCollectorInterface
         global $wpdb;
         global $table_prefix;
 
-        $where_categories = '';
+        $where_categories = "";
 
         if (!empty($categories)) {
 
             foreach ($categories as $category) {
+
+                $category = $wpdb->esc_sql($wpdb->esc_like($category));
                 
-                if (empty($where_categories)) $where_categories .= ' AND (t.meta_value LIKE %'.$wpdb->prepare("%s", $category).'%';
-                else $where_categories .= ' OR t.meta_value LIKE %'.$wpdb->prepare("%s", $category).'%';
+                if (empty($where_categories)) $where_categories .= " AND (t.meta_value LIKE '%".$category."%'";
+                else $where_categories .= " OR t.meta_value LIKE '%".$category."%'";
 
             }
 
-            $where_categories .= ')';
+            $where_categories .= ")";
 
         }
 
-        $select = $wpdb->get_results("SELECT t.user_id FROM ".DB_NAME.".".$table_prefix."usermeta AS t WHERE t.meta_key LIKE %capabilities%".$where_categories, ARRAY_A);
+        $select = $wpdb->get_results("SELECT t.user_id FROM ".DB_NAME.".".$table_prefix."usermeta AS t WHERE t.meta_key LIKE '%capabilities%'".$where_categories, ARRAY_A);
 
         if (is_array($select)) {
 

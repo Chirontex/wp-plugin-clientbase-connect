@@ -22,11 +22,11 @@ class CBCDataTaker implements CBCDataTakerInterface
     public $cbct;
     public $logger;
 
-    public function __construct(object $cbct)
+    public function __construct(string $db_name = '')
     {
 
-        if (in_array('CBConnectTableInterface', class_implements($cbct))) $this->cbct = $cbct;
-        else $this->cbct = new CBConnectTable(DB_NAME);
+        if (empty($db_name)) $this->cbct = new CBConnectTable(DB_NAME);
+        else $this->cbct = new CBConnectTable($db_name);
 
         $this->logger = new CBCLogger;
         $this->logger->logging_level = 2;
