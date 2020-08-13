@@ -97,7 +97,7 @@ class CBCUsersDataCollector implements CBCUsersDataCollectorInterface
 
                 $where_meta = '';
 
-                $result = [];
+                $result['user_id'] = $user_id;
 
                 foreach ($meta_entities as $meta) {
                     
@@ -108,7 +108,7 @@ class CBCUsersDataCollector implements CBCUsersDataCollectorInterface
 
                 }
 
-                $usermeta = $wpdb->get_results($wpdb->prepare("SELECT t.meta_key, t.meta_value FROM ".DB_NAME.".".$table_prefix."usermeta AS t WHERE t.user_id = '%d'", $user_id)." AND (".$where_meta.")", ARRAY_A);
+                $usermeta = $wpdb->get_results($wpdb->prepare("SELECT t.meta_key, t.meta_value FROM ".DB_NAME.".".$table_prefix."usermeta AS t WHERE t.user_id = '%d' AND (".$where_meta.")", $user_id), ARRAY_A);
 
                 if (is_array($usermeta)) {
 

@@ -373,7 +373,7 @@ function clientbaseconnect_user_create(int $user_id)
 
                 if ($user_data) {
 
-                    if (array_search('user_id', $fields) !== false) $user_data['user_id'] = $user_id;
+                    if (!isset($user_data['user_id'])) $user_data['user_id'] = $user_id;
 
                     $row_create = $client_base_connect->row_create($user_data);
 

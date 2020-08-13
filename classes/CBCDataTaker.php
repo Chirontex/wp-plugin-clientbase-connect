@@ -172,7 +172,7 @@ class CBCDataTaker implements CBCDataTakerInterface
     public function get_fields()
     {
 
-        $select = $this->cbct->select("SELECT t.option_key, t.option_value FROM ".$this->cbct->db_name.".".$this->cbct->db_prefix."clientbaseconnect_options AS t WHERE t.option_key = 'id' OR t.option_key = 'user_id' OR t.option_key = 'add_time' OR t.option_key = 'status' OR t.option_key LIKE 'f%'", ARRAY_A);
+        $select = $this->cbct->select("SELECT t.option_key, t.option_value FROM ".$this->cbct->db_name.".".$this->cbct->db_prefix."clientbaseconnect_options AS t WHERE t.option_key != 'url' AND t.option_key != 'login' AND t.option_key != 'key' AND t.option_key != 'table'", ARRAY_A);
 
         if (is_array($select)) {
 

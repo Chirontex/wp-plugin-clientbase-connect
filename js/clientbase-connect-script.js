@@ -762,6 +762,6 @@ function cbc_mass_sync_timeout(ids, i)
         if (button_sync.hasAttribute('disabled')) button_sync.removeAttribute('disabled');
 
     }
-    else setTimeout(cbc_mass_sync_check, 1000, ids, i + 1);
+    else setTimeout(cbc_mass_sync_check, 10, ids, i + 1);
 
 }
