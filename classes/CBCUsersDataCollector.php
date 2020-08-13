@@ -39,8 +39,6 @@ class CBCUsersDataCollector implements CBCUsersDataCollectorInterface
         if (!empty($categories)) {
 
             foreach ($categories as $category) {
-
-                $category = $wpdb->esc_sql($wpdb->esc_like($category));
                 
                 if (empty($where_categories)) $where_categories .= " AND (t.meta_value LIKE '%".$category."%'";
                 else $where_categories .= " OR t.meta_value LIKE '%".$category."%'";

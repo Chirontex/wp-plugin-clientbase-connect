@@ -359,7 +359,7 @@ function clientbaseconnect_user_create(int $user_id)
     global $cbc_data_taker;
     global $client_base_connect;
 
-    if (in_array('CBConnectInterface', class_implements($client_base_connect))) {
+    if ($client_base_connect instanceof CBConnect) {
 
         if ($user_id > 0) {
 
@@ -402,7 +402,7 @@ function clientbaseconnect_user_read(int $user_id, bool $cals = true, array $sor
     global $cbc_data_taker;
     global $client_base_connect;
 
-    if (in_array('CBConnectInterface', class_implements($client_base_connect))) {
+    if ($client_base_connect instanceof CBConnect) {
 
         if ($user_id > 0) {
 
@@ -441,7 +441,7 @@ function clientbaseconnect_user_update(int $user_id)
     global $cbc_data_taker;
     global $client_base_connect;
 
-    if (in_array('CBConnectInterface', class_implements($client_base_connect))) {
+    if ($client_base_connect instanceof CBConnect) {
 
         if ($user_id > 0) {
 
@@ -484,26 +484,34 @@ function clientbaseconnect_user_meta($mid, $object_id, $meta_key, $meta_value)
     global $cbc_logger;
     global $cbc_data_taker;
 
-    $fields = $cbc_data_taker->get_fields();
+    $data_collector = new CBCUsersDataCollector;
 
-    if ($fields) {
+    $users = $data_collector->get_users_ids();
 
-        if (array_search($meta_key, $fields) !== false) {
+    if ((is_array($users) && (array_search($object_id, $users) !== false)) || !is_array($users)) {
 
-            $user_update = clientbaseconnect_user_update((int)$object_id);
+        $fields = $cbc_data_taker->get_fields();
 
-            if ($user_update['code'] !== 0) {
+        if ($fields) {
 
-                $cbc_logger->log('added_user_meta, "'.$user_update['message'].'"', 2);
+            if (array_search($meta_key, $fields) !== false) {
 
-                $user_create = clientbaseconnect_user_create((int)$object_id);
+                $user_update = clientbaseconnect_user_update((int)$object_id);
 
-                if ($user_create['code'] !== 0) $cbc_logger->log('updating user meta failed, creating user instead of, "'.$user_create['message'].'"', 2);
+                if ($user_update['code'] !== 0) {
+
+                    $cbc_logger->log('added_user_meta, "'.$user_update['message'].'"', 2);
+
+                    $user_create = clientbaseconnect_user_create((int)$object_id);
+
+                    if ($user_create['code'] !== 0) $cbc_logger->log('updating user meta failed, creating user instead of, "'.$user_create['message'].'"', 2);
+
+                }
 
             }
 
-        }
+        } else $cbc_logger->log('added_user_meta, fields getting failed.', 1);
 
-    } else $cbc_logger->log('added_user_meta, fields getting failed.', 1);
+    }
 
 }

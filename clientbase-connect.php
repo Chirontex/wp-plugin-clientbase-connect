@@ -3,7 +3,7 @@
  * Plugin Name: ClentBase Connect
  * Plugin URI: https://github.com/drnoisier/wp-plugin-clientbase-connect
  * Description: WordPress-плагин, предназначенный для экспорта данных о пользователях в CRM-систему на платформе "Клиентская база" .
- * Version: 0.955
+ * Version: 0.96
  * Author: Дмитрий Шумилин
  * Author URI: mailto://dr.noisier@yandex.ru
  */
@@ -202,10 +202,18 @@ add_action('admin_menu', function() {
 add_action('user_register', function($user_id) {
 
     global $cbc_logger;
-    
-    $user_create = clientbaseconnect_user_create((int)$user_id);
 
-    if ($user_create['code'] !== 0) $cbc_logger->log('user_register, "'.$user_create['message'].'"', 2);
+    $data_collector = new CBCUsersDataCollector;
+
+    $users = $data_collector->get_users_ids();
+
+    if ((is_array($users) && (array_search($user_id, $users) !== false)) || !is_array($users)) {
+    
+        $user_create = clientbaseconnect_user_create((int)$user_id);
+
+        if ($user_create['code'] !== 0) $cbc_logger->log('user_register, "'.$user_create['message'].'"', 2);
+
+    }
 
 });
 
@@ -213,15 +221,23 @@ add_action('profile_update', function($user_id, $old_user_data) {
 
     global $cbc_logger;
 
-    $user_update = clientbaseconnect_user_update((int)$user_id);
+    $data_collector = new CBCUsersDataCollector;
 
-    if ($user_update['code'] !== 0) {
+    $users = $data_collector->get_users_ids();
 
-        $cbc_logger->log('profile_update, "'.$user_update['message'].'"', 2);
+    if ((is_array($users) && (array_search($user_id, $users) !== false)) || !is_array($users)) {
 
-        $user_create = clientbaseconnect_user_create((int)$user_id);
+        $user_update = clientbaseconnect_user_update((int)$user_id);
 
-        if ($user_create['code'] !== 0) $cbc_logger->log('updating user failed, creating user instead of, "'.$user_create['message'].'"', 2);
+        if ($user_update['code'] !== 0) {
+
+            $cbc_logger->log('profile_update, "'.$user_update['message'].'"', 2);
+
+            $user_create = clientbaseconnect_user_create((int)$user_id);
+
+            if ($user_create['code'] !== 0) $cbc_logger->log('updating user failed, creating user instead of, "'.$user_create['message'].'"', 2);
+
+        }
 
     }
 

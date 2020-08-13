@@ -170,7 +170,7 @@ function cbc_table_generate()
         input.setAttribute('id', 'cbc_table_number');
         input.setAttribute('class', 'form-control');
 
-        if (answer['code'] === 0) input.setAttribute('value', answer['data']);
+        if (answer['code'] == 0) input.setAttribute('value', answer['data']);
 
         p.appendChild(input);
 
@@ -234,7 +234,7 @@ function cbc_fields_generate()
         var a;
         var input;
 
-        if (answer['code'] === 0)
+        if (answer['code'] == 0)
         {
             const fields = Object.keys(answer['data']);
 
@@ -418,7 +418,7 @@ function cbc_table_save()
 
     fields_request.done(function(answer) {
 
-        if (answer['code'] === 0)
+        if (answer['code'] == 0)
         {
             status.innerHTML = 'Удаление старых настроек...';
 
@@ -431,7 +431,7 @@ function cbc_table_save()
 
             delete_request.done(function(answer) {
 
-                if (answer['code'] === 0) cbc_table_set();
+                if (answer['code'] == 0) cbc_table_set();
                 else
                 {
                     button_save.innerHTML = 'Сохранить';
@@ -496,7 +496,7 @@ function cbc_table_set()
 
     table_request.done(function(answer) {
 
-        if (answer['code'] === 0)
+        if (answer['code'] == 0)
         {
             status.innerHTML = 'Сохранение полей таблицы...';
 
@@ -581,7 +581,7 @@ function cbc_settings_set()
 
     request.done(function(answer) {
 
-        if (answer['code'] === 0)
+        if (answer['code'] == 0)
         {
 
             save_button.innerHTML = 'Сохранить';
@@ -662,7 +662,7 @@ function cbc_mass_sync_init()
 
     request.done(function(answer) {
 
-        if (answer['code'] === 0) cbc_mass_sync_check(answer['data'], 0);
+        if (answer['code'] == 0) cbc_mass_sync_check(answer['data'], 0);
         else
         {
 
@@ -702,7 +702,7 @@ function cbc_mass_sync_check(ids, i)
 
         let type = '';
 
-        if (answer['code'] === 0) type = 'update';
+        if (answer['code'] == 0) type = 'update';
         else type = 'create';
 
         cbc_mass_sync_user(ids, i, type);
@@ -732,7 +732,7 @@ function cbc_mass_sync_user(ids, i, type)
 
     request.done(function(answer) {
         
-        if (answer['code'] !== 0) status.innerHTML = 'Ошибка синхронизации пользователя. Код: '+answer['code']+', сообщение: "'+answer['message']+'"';
+        if (answer['code'] != 0) status.innerHTML = 'Ошибка синхронизации пользователя. Код: '+answer['code']+', сообщение: "'+answer['message']+'"';
 
         cbc_mass_sync_timeout(ids, i);
     });
@@ -760,7 +760,7 @@ function cbc_mass_sync_timeout(ids, i)
         if (button_back.hasAttribute('disabled')) button_back.removeAttribute('disabled');
 
         if (button_sync.hasAttribute('disabled')) button_sync.removeAttribute('disabled');
-        
+
     }
     else setTimeout(cbc_mass_sync_check, 1000, ids, i + 1);
 
