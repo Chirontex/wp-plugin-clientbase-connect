@@ -367,6 +367,21 @@ function cbc_fields_generate()
 
         button.innerHTML = 'Вернуться к соединению';
 
+        p = document.createElement('p');
+        p.setAttribute('style', 'text-align: center;');
+
+        main.appendChild(p);
+
+        button = document.createElement('button');
+        button.setAttribute('type', 'button');
+        button.setAttribute('class', 'btn btn-info');
+        button.setAttribute('id', 'cbc_table_mass_sync');
+        button.setAttribute('onclick', 'cbc_mass_sync_init();');
+
+        p.appendChild(button);
+
+        button.innerHTML = 'Запустить массовую синхронизацию';
+
         document.querySelector('#clientbase-connect-status').innerHTML = '';
 
     });
@@ -616,5 +631,137 @@ function cbc_settings_check()
         main.innerHTML = '';
         cbc_table_generate();
     }
+
+}
+
+function cbc_mass_sync_init()
+{
+    const button_save = document.querySelector('#cbc_table_save_button');
+    const button_back = document.querySelector('#cbc_table_back_button');
+    const button_sync = document.querySelector('#cbc_table_mass_sync');
+
+    const status = document.querySelector('#clientbase-connect-status');
+
+    const hash_key = document.querySelector('#cbc_csrf_hash_key').value;
+    const hash_value = document.querySelector('#cbc_csrf_hash_value').value;
+
+    if (!button_save.hasAttribute('disabled')) button_save.setAttribute('disabled', '');
+
+    if (!button_back.hasAttribute('disabled')) button_back.setAttribute('disabled', '');
+
+    if (!button_sync.hasAttribute('disabled')) button_sync.setAttribute('disabled', '');
+
+    status.innerHTML = 'Получение списка пользователей...';
+
+    var request = $.ajax({
+        url: "/wp-json/clientbaseconnect/v1/data/get_ids",
+        method: "POST",
+        data: {hash: hash_value, hash_key: hash_key},
+        dataType: "json"
+    });
+
+    request.done(function(answer) {
+
+        if (answer['code'] === 0) cbc_mass_sync_check(answer['data'], 0);
+        else
+        {
+
+            if (button_save.hasAttribute('disabled')) button_save.removeAttribute('disabled');
+
+            if (button_back.hasAttribute('disabled')) button_back.removeAttribute('disabled');
+
+            if (button_sync.hasAttribute('disabled')) button_sync.removeAttribute('disabled');
+
+            status.innerHTML = 'Ошибка синхронизации пользователей. Код: '+answer['code']+', сообщение: "'+answer['message']+'"';
+        }
+    });
+
+    request.fail(function(jqXHR, textStatus) {
+        console.log(jqXHR);
+        status.innerHTML = 'Ошибка AJAX-запроса. "'+textStatus+'"';
+    });
+}
+
+function cbc_mass_sync_check(ids, i)
+{
+    const status = document.querySelector('#clientbase-connect-status');
+
+    const hash_key = document.querySelector('#cbc_csrf_hash_key').value;
+    const hash_value = document.querySelector('#cbc_csrf_hash_value').value;
+
+    status.innerHTML = 'Синхронизация пользователей: '+(i + 1)+' из '+ids.length+'...';
+
+    var request = $.ajax({
+        url: "/wp-json/clientbaseconnect/v1/data/read_user",
+        method: "POST",
+        data: {hash: hash_value, hash_key: hash_key, user_id: ids[i]},
+        dataType: "json"
+    });
+
+    request.done(function(answer) {
+
+        let type = '';
+
+        if (answer['code'] === 0) type = 'update';
+        else type = 'create';
+
+        cbc_mass_sync_user(ids, i, type);
+
+    });
+
+    request.fail(function(jqXHR, textStatus) {
+        console.log(jqXHR);
+        status.innerHTML = 'Ошибка AJAX-запроса. "'+textStatus+'"';
+    });
+
+}
+
+function cbc_mass_sync_user(ids, i, type)
+{
+    const status = document.querySelector('#clientbase-connect-status');
+
+    const hash_key = document.querySelector('#cbc_csrf_hash_key').value;
+    const hash_value = document.querySelector('#cbc_csrf_hash_value').value;
+
+    var request = $.ajax({
+        url: "/wp-json/clientbaseconnect/v1/data/"+type+"_user",
+        method: "POST",
+        data: {hash: hash_value, hash_key: hash_key, user_id: ids[i]},
+        dataType: "json"
+    });
+
+    request.done(function(answer) {
+        
+        if (answer['code'] !== 0) status.innerHTML = 'Ошибка синхронизации пользователя. Код: '+answer['code']+', сообщение: "'+answer['message']+'"';
+
+        cbc_mass_sync_timeout(ids, i);
+    });
+
+    request.fail(function(jqXHR, textStatus) {
+        console.log(jqXHR);
+        status.innerHTML = 'Ошибка AJAX-запроса. "'+textStatus+'"';
+    });
+}
+
+function cbc_mass_sync_timeout(ids, i)
+{
+    const status = document.querySelector('#clientbase-connect-status');
+
+    const button_save = document.querySelector('#cbc_table_save_button');
+    const button_back = document.querySelector('#cbc_table_back_button');
+    const button_sync = document.querySelector('#cbc_table_mass_sync');
+
+    if (i == ids.length - 1) 
+    {
+        status.innerHTML = 'Пользователи синхронизированы.';
+
+        if (button_save.hasAttribute('disabled')) button_save.removeAttribute('disabled');
+
+        if (button_back.hasAttribute('disabled')) button_back.removeAttribute('disabled');
+
+        if (button_sync.hasAttribute('disabled')) button_sync.removeAttribute('disabled');
+        
+    }
+    else setTimeout(cbc_mass_sync_check, 1000, ids, i + 1);
 
 }
