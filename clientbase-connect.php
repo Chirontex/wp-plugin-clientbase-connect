@@ -3,7 +3,7 @@
  * Plugin Name: ClentBase Connect
  * Plugin URI: https://github.com/drnoisier/wp-plugin-clientbase-connect
  * Description: WordPress-плагин, предназначенный для экспорта данных о пользователях в CRM-систему на платформе "Клиентская база" .
- * Version: 0.931
+ * Version: 0.935
  * Author: Дмитрий Шумилин
  * Author URI: mailto://dr.noisier@yandex.ru
  */
@@ -23,22 +23,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-require_once plugin_dir_path(__FILE__).'classes/interfaces/ClientBaseAPIInterface.php';
-require_once plugin_dir_path(__FILE__).'classes/interfaces/CBConnectTableInterface.php';
-require_once plugin_dir_path(__FILE__).'classes/interfaces/CBCDataTakerInterface.php';
-require_once plugin_dir_path(__FILE__).'classes/interfaces/CBCLoggerInterface.php';
-require_once plugin_dir_path(__FILE__).'classes/interfaces/CBConnectInterface.php';
-require_once plugin_dir_path(__FILE__).'classes/interfaces/CBCUsersDataCollectorInterface.php';
-
-require_once plugin_dir_path(__FILE__).'classes/ClientBaseAPI.php';
-require_once plugin_dir_path(__FILE__).'classes/CBConnectTable.php';
-require_once plugin_dir_path(__FILE__).'classes/CBCDataTaker.php';
-require_once plugin_dir_path(__FILE__).'classes/CBCLogger.php';
-require_once plugin_dir_path(__FILE__).'classes/CBConnect.php';
-require_once plugin_dir_path(__FILE__).'classes/CBCUsersDataCollector.php';
-
-require_once plugin_dir_path(__FILE__).'clientbase-connect_functions.php';
+require_once plugin_dir_path(__FILE__).'clientbase-connect_autoload.php';
 
 define('CBAPI_CREATE', 'create');
 define('CBAPI_READ', 'read');
