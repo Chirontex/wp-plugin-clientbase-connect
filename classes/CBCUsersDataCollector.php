@@ -100,11 +100,17 @@ class CBCUsersDataCollector implements CBCUsersDataCollectorInterface
                 $result['user_id'] = $user_id;
 
                 foreach ($meta_entities as $meta) {
-                    
-                    if (empty($where_meta)) $where_meta .= $wpdb->prepare('t.meta_key = "%s"', (string)$meta);
-                    else $where_meta .= $wpdb->prepare(' OR t.meta_key = "%s"', (string)$meta);
 
-                    if (isset($user[$meta])) $result[$meta] = $user[$meta];
+                    $meta = (string)$meta;
+
+                    if (isset($user[0][$meta])) $result[$meta] = $user[0][$meta];
+
+                    if ($meta !== 'user_login' && $meta !== 'user_nicename' && $meta !== 'user_email' && $meta !== 'user_registered') {
+                    
+                        if (empty($where_meta)) $where_meta .= $wpdb->prepare('t.meta_key = "%s"', $meta);
+                        else $where_meta .= $wpdb->prepare(' OR t.meta_key = "%s"', $meta);
+
+                    }
 
                 }
 
