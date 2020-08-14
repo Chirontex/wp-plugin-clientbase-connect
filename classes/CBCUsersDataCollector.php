@@ -122,7 +122,18 @@ class CBCUsersDataCollector implements CBCUsersDataCollectorInterface
 
                         foreach ($usermeta as $values) {
                             
-                            if (array_search($values['meta_key'], $meta_entities) !== false) $result[$values['meta_key']] = $values['meta_value'];
+                            if (array_search($values['meta_key'], $meta_entities) !== false) {
+
+                                if ($values['meta_key'] == 'date_of_birth') {
+
+                                    $birthdate = explode('-', $values['meta_value']);
+
+                                    if (iconv_strlen($birthdate[2]) > 2) $result[$values['meta_key']] = $birthdate[2].'-'.$birthdate[1].'-'.$birthdate[0];
+                                    else $result[$values['meta_key']] = $values['meta_value'];
+
+                                } else $result[$values['meta_key']] = $values['meta_value'];
+                            
+                            }
 
                         }
 

@@ -558,8 +558,6 @@ function cbc_settings_set()
     var save_button = document.querySelector('#cbc_settings_save_button');
     var back_button = document.querySelector('#cbc_settings_back_button');
 
-    var is_set = cbc_settings_are_set;
-
     save_button.innerHTML = 'Подождите...';
 
     if (!save_button.hasAttribute('disabled')) save_button.setAttribute('disabled', '');
@@ -592,9 +590,13 @@ function cbc_settings_set()
 
             if (back_button.hasAttribute('disabled')) back_button.removeAttribute('disabled');
 
+            document.querySelector('#cbc_settings_url').setAttribute('value', url);
+            document.querySelector('#cbc_settings_login').setAttribute('value', login);
+            document.querySelector('#cbc_settings_key').setAttribute('value', key);
+
             window.cbc_settings_buffer = main.innerHTML;
 
-            if (is_set) status.innerHTML = 'Настройки соединения сохранены.';
+            if (window.cbc_settings_are_set) status.innerHTML = 'Настройки соединения сохранены.';
             else {
                 
                 main.innerHTML = '';
