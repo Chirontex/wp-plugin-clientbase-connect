@@ -502,13 +502,13 @@ function clientbaseconnect_user_meta($mid, $object_id, $meta_key, $meta_value)
 
                     $user_update = clientbaseconnect_user_update((int)$object_id);
 
-                    if ((int)$user_update['code'] !== 0) $cbc_logger->log('added_user_meta, "'.$user_update['message'].'"', 2);
+                    if ((int)$user_update['code'] !== 0) $cbc_logger->log('clientbaseconnect_user_meta(), "'.$user_update['message'].'"', 2);
 
                 }
 
-            } else $cbc_logger->log('added_user_meta, fields getting failed.', 1);
+            } else $cbc_logger->log('clientbaseconnect_user_meta(), fields getting failed', 1);
 
-        }
+        } else $cbc_logger->log('clientbaseconnect_user_meta(), user not found', 2);
 
     }
 
