@@ -490,27 +490,25 @@ function clientbaseconnect_user_meta($mid, $object_id, $meta_key, $meta_value)
 
     if ((is_array($users) && (array_search($object_id, $users) !== false)) || !is_array($users)) {
 
-        $fields = $cbc_data_taker->get_fields();
+        $user_read = clientbaseconnect_user_read((int)$object_id);
 
-        if ($fields) {
+        if ((int)$user_read['code'] === 0 && (int)$user_read['count_all'] > 0) {
 
-            if (array_search($meta_key, $fields) !== false) {
+            $fields = $cbc_data_taker->get_fields();
 
-                $user_update = clientbaseconnect_user_update((int)$object_id);
+            if ($fields) {
 
-                if ($user_update['code'] !== 0) {
+                if (array_search($meta_key, $fields) !== false) {
 
-                    $cbc_logger->log('added_user_meta, "'.$user_update['message'].'"', 2);
+                    $user_update = clientbaseconnect_user_update((int)$object_id);
 
-                    $user_create = clientbaseconnect_user_create((int)$object_id);
-
-                    if ($user_create['code'] !== 0) $cbc_logger->log('updating user meta failed, creating user instead of, "'.$user_create['message'].'"', 2);
+                    if ((int)$user_update['code'] !== 0) $cbc_logger->log('added_user_meta, "'.$user_update['message'].'"', 2);
 
                 }
 
-            }
+            } else $cbc_logger->log('added_user_meta, fields getting failed.', 1);
 
-        } else $cbc_logger->log('added_user_meta, fields getting failed.', 1);
+        }
 
     }
 

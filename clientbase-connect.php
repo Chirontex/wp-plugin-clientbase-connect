@@ -3,7 +3,7 @@
  * Plugin Name: ClentBase Connect
  * Plugin URI: https://github.com/drnoisier/wp-plugin-clientbase-connect
  * Description: WordPress-плагин, предназначенный для экспорта данных о пользователях в CRM-систему на платформе "Клиентская база" .
- * Version: 1.0
+ * Version: 1.1
  * Author: Дмитрий Шумилин
  * Author URI: mailto://dr.noisier@yandex.ru
  */
@@ -227,15 +227,13 @@ add_action('profile_update', function($user_id, $old_user_data) {
 
     if ((is_array($users) && (array_search($user_id, $users) !== false)) || !is_array($users)) {
 
-        $user_update = clientbaseconnect_user_update((int)$user_id);
+        $user_read = clientbaseconnect_user_read((int)$user_id);
 
-        if ($user_update['code'] !== 0) {
+        if ((int)$user_read['code'] === 0 && (int)$user_read['count_all'] > 0) {
 
-            $cbc_logger->log('profile_update, "'.$user_update['message'].'"', 2);
+            $user_update = clientbaseconnect_user_update((int)$user_id);
 
-            $user_create = clientbaseconnect_user_create((int)$user_id);
-
-            if ($user_create['code'] !== 0) $cbc_logger->log('updating user failed, creating user instead of, "'.$user_create['message'].'"', 2);
+            if ((int)$user_update['code'] !== 0) $cbc_logger->log('updating user failed, "'.$user_update['message'].'"', 2);
 
         }
 
